@@ -1,0 +1,363 @@
+/* ===========================
+   Container
+=========================== */
+.form-kegiatan-page-container {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding-top: 60px; /* ← sebelumnya 80px, dinaikkan agar jarak ke header lebih dekat */
+  padding-bottom: 40px;
+}
+
+.form-kegiatan-page-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ===========================
+   Header Baru
+=========================== */
+
+/* Judul utama di tengah */
+.form-kegiatan-page-title-center {
+  text-align: center;
+  font-size: 2.5rem; /* ← diperbesar dari 2rem */
+  font-weight: 800;
+  color: #15803d;
+  margin-bottom: 1.25rem; /* sedikit dikurangi agar lebih rapat */
+}
+
+/* Subjudul & tombol kembali sejajar */
+.form-kegiatan-page-subheader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.form-kegiatan-page-subtitle {
+  font-size: 0.95rem;
+  color: #559e4a;
+  margin: 0;
+}
+
+.form-page-back-btn {
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border: 2px solid #22c55e;
+  color: #22c55e;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.form-page-back-btn:hover {
+  background-color: #f0fdf4;
+  transform: translateX(-4px);
+}
+
+.icon-back {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* ===========================
+   Form Body
+=========================== */
+.form-kegiatan-page-body {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+/* ===========================
+   Form Section
+=========================== */
+.form-kegiatan-page-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.form-kegiatan-page-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.form-page-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #22c55e;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-icon {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #22c55e;
+}
+
+/* ===========================
+   Form Group
+=========================== */
+.form-kegiatan-page-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-kegiatan-page-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.form-page-required {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* ===========================
+   Form Input, Textarea, Select
+=========================== */
+.form-kegiatan-page-input,
+.form-kegiatan-page-textarea,
+.form-kegiatan-page-select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: white;
+}
+
+.form-kegiatan-page-input:focus,
+.form-kegiatan-page-textarea:focus,
+.form-kegiatan-page-select:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+}
+
+.form-kegiatan-page-input:hover,
+.form-kegiatan-page-textarea:hover,
+.form-kegiatan-page-select:hover {
+  border-color: #b0b0b0;
+}
+
+.form-kegiatan-page-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-kegiatan-page-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M5 8l5 5 5-5z' fill='%23666'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.875rem center;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+/* ===========================
+   Error State
+=========================== */
+.form-page-input-error {
+  border-color: #dc2626 !important;
+  background-color: #fee2e2;
+}
+
+.form-page-input-error:focus {
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15) !important;
+}
+
+.form-page-error-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #dc2626;
+  font-size: 0.8rem;
+  margin-top: 0.375rem;
+  font-weight: 500;
+  animation: shake 0.3s ease-out;
+}
+
+.error-icon {
+  font-weight: bold;
+  font-size: 0.7rem;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+/* ===========================
+   Form Row
+=========================== */
+.form-kegiatan-page-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .form-kegiatan-page-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ===========================
+   Footer
+=========================== */
+.form-kegiatan-page-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background-color: white;
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.form-page-footer-actions {
+  display: flex;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+.form-page-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-page-btn-reset {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.form-page-btn-reset:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-page-btn-cancel {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.form-page-btn-cancel:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-page-btn-submit {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.form-page-btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+}
+
+.form-page-btn-submit:active {
+  transform: translateY(0);
+}
+
+.icon-reset,
+.icon-cancel,
+.icon-save {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+@media (max-width: 640px) {
+  .form-kegiatan-page-container {
+    padding-top: 50px;
+    padding-bottom: 20px;
+  }
+
+  .form-kegiatan-page-title-center {
+    font-size: 2rem; /* tetap lebih besar di mobile */
+  }
+
+  .form-kegiatan-page-subheader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .form-page-back-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .form-kegiatan-page-body {
+    padding: 1.5rem;
+  }
+
+  .form-kegiatan-page-footer {
+    flex-direction: column-reverse;
+  }
+
+  .form-page-footer-actions {
+    width: 100%;
+    margin-left: 0;
+    gap: 0.75rem;
+  }
+
+  .form-page-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .form-page-btn-reset {
+    order: 3;
+    width: auto;
+    flex: 0;
+  }
+}

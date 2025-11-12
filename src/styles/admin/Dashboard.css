@@ -1,0 +1,333 @@
+.dashboard-container {
+  padding: 20px;
+}
+
+.dashboard-header {
+  margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  color: var(--dark-text);
+  margin-bottom: 10px;
+}
+
+.dashboard-header p {
+  font-size: 1.1rem;
+  color: var(--light-text);
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.card {
+  background-color: var(--posanak-surface);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  border-left: 5px solid;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  color: var(--light-text);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.card-number {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: auto;
+  padding-bottom: 15px;
+}
+
+.card-footer {
+  border-top: 1px solid var(--posanak-border);
+  padding-top: 15px;
+  font-size: 0.9rem;
+  color: var(--light-text);
+}
+
+/* Pewarnaan spesifik untuk setiap kartu */
+
+/* Kartu Anak */
+.anak-card {
+  border-color: #3498db;
+}
+.anak-card .card-number {
+  color: #3498db;
+}
+
+/* Kartu Kegiatan */
+.kegiatan-card {
+  border-color: #f1c40f;
+}
+.kegiatan-card .card-number {
+  color: #f1c40f;
+}
+
+/* Kartu Berita */
+.berita-card {
+  border-color: #9b59b6;
+}
+.berita-card .card-number {
+  color: #9b59b6;
+}
+
+/* Kartu Validasi */
+.validasi-card {
+  border-color: var(--posanak-danger);
+}
+.validasi-card .card-number {
+  color: var(--posanak-danger);
+}
+
+/* Kartu Anak Normal */
+.normal-card {
+  border-color: #27ae60;
+}
+.normal-card .card-number {
+  color: #27ae60;
+}
+
+/* Charts Grid Layout */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+/* Chart Section */
+.chart-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container {
+  background-color: var(--posanak-surface);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  flex: 1;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.chart-title {
+  font-size: 1.5rem;
+  color: var(--dark-text);
+  font-weight: 600;
+  margin: 0;
+}
+
+.year-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.year-selector label {
+  font-size: 1rem;
+  color: var(--dark-text);
+  font-weight: 500;
+}
+
+.year-select {
+  padding: 8px 15px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--dark-text);
+  background-color: var(--posanak-surface);
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.year-select:hover {
+  border-color: #3498db;
+}
+
+.year-select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Legend Container */
+.legend-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--posanak-border);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-text {
+  font-size: 0.95rem;
+  color: var(--dark-text);
+  font-weight: 500;
+}
+
+/* Custom Tooltip */
+.custom-tooltip {
+  background-color: #fff;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip-label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--dark-text);
+  font-weight: 600;
+}
+
+.tooltip-value {
+  margin: 5px 0 0 0;
+  font-size: 0.9rem;
+  color: var(--light-text);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 15px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .dashboard-header p {
+    font-size: 1rem;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chart-title {
+    font-size: 1.2rem;
+  }
+
+  .summary-cards {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  .card-number {
+    font-size: 2rem;
+  }
+
+  .chart-container {
+    padding: 20px;
+  }
+
+  .chart-title {
+    font-size: 1.2rem;
+  }
+
+  .legend-container {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-grid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-header p {
+    font-size: 0.9rem;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .card h3 {
+    font-size: 0.95rem;
+  }
+
+  .card-number {
+    font-size: 1.8rem;
+  }
+
+  .card-footer {
+    font-size: 0.8rem;
+  }
+
+  .chart-container {
+    padding: 15px;
+  }
+
+  .year-selector {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .year-select {
+    width: 100%;
+  }
+}

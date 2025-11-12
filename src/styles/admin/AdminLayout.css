@@ -1,0 +1,194 @@
+:root {
+  --posanak-bg: #f4f6f8;
+  --posanak-danger: #e74c3c;
+  --primary-green: #388e3c;
+  --header-height: 70px; /* Tinggi Navbar */
+  --sidebar-bg: #2c3e50;
+  --text-light: #bdc3c7;
+}
+
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--posanak-bg);
+}
+
+/* --- 1. HEADER UTAMA --- */
+.admin-header {
+  height: var(--header-height);
+  width: 100%;
+  background-color: var(--sidebar-bg);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-logo-container img {
+  width: 35px;
+  height: 35px;
+}
+
+.header-logo-container span {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* --- 2. NAVIGASI DESKTOP (Horizontal) --- */
+.header-nav-desktop {
+  display: flex;
+  gap: 60px;
+  height: 100%;
+  align-items: center;
+}
+
+.header-nav-desktop a {
+  padding: 5px 0px;
+  color: var(--text-light);
+  text-decoration: none;
+  transition: color 0.3s, border-bottom 0.3s;
+  border-bottom: 3px solid transparent;
+  font-weight: 500;
+}
+
+.header-nav-desktop a:hover {
+  color: white;
+  border-bottom-color: white;
+}
+
+.header-nav-desktop a.active {
+  color: white;
+  font-weight: 600;
+  border-bottom-color: var(--primary-green);
+}
+
+/* --- 3. KONTEN UTAMA --- */
+.admin-content-horizontal {
+  flex-grow: 1;
+  padding: 30px;
+}
+
+/* --- 4. LOGOUT BUTTON (Desktop) --- */
+.logout-button {
+  padding: 8px 15px;
+  background-color: var(--posanak-danger);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}
+
+/* Tombol Hamburger dan Menu Mobile: Sembunyikan di desktop */
+.hamburger-btn,
+.mobile-menu-overlay {
+  display: none;
+}
+/* Pastikan header-controls-right hanya menampung hamburger di mobile */
+.header-controls-right {
+  display: flex;
+  align-items: center;
+}
+
+/* ============================================== */
+/* MEDIA QUERY: RESPONSIVE (Layar <= 890px) */
+/* ============================================== */
+@media (max-width: 890px) {
+  /* --- 1. HEADER UTAMA Mobile --- */
+  .admin-header {
+    /* Menggunakan flex-direction row (default) - Logo/Nama di Kiri */
+    flex-direction: row;
+  }
+
+  /* --- 2. Sembunyikan Navigasi Desktop dan Kontrol Logout Desktop --- */
+  .header-nav-desktop,
+  .header-controls-desktop {
+    display: none;
+  }
+
+  /* --- 3. Tombol Hamburger (Pindah ke KANAN) --- */
+  /* Tombol hamburger kini berada di dalam header-controls-right, yang secara otomatis didorong ke kanan oleh justify-content: space-between pada .admin-header */
+  .hamburger-btn {
+    display: block;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    /* Memberi sedikit jarak */
+    margin-left: 15px;
+  }
+
+  /* --- 4. MOBILE MENU OVERLAY --- */
+  .mobile-menu-overlay {
+    display: block;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    width: 100%;
+    height: calc(100% - var(--header-height));
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .mobile-menu-overlay.open {
+    transform: translateX(0);
+  }
+
+  /* --- 5. Konten Menu Mobile --- */
+  .admin-nav-mobile {
+    width: 80%;
+    max-width: 300px;
+    height: 100%;
+    background-color: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+  }
+
+  .admin-nav-mobile a {
+    padding: 15px 20px;
+    color: var(--text-light);
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s, border-left 0.3s;
+    border-left: 4px solid transparent;
+  }
+
+  .admin-nav-mobile a:hover {
+    background-color: #34495e;
+    color: white;
+    border-left-color: white;
+  }
+  .admin-nav-mobile a.active {
+    background-color: #34495e;
+    color: white;
+    border-left-color: var(--primary-green);
+  }
+
+  /* --- 6. Logout di Mobile Footer --- */
+  .mobile-logout-footer {
+    padding: 20px;
+    margin-top: auto;
+    border-top: 1px solid #34495e;
+  }
+}

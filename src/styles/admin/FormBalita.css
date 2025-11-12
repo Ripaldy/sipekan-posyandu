@@ -1,0 +1,406 @@
+/* =============================================== */
+/* CONTAINER & HEADER UTAMA */
+/* =============================================== */
+.kelola-container {
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
+  min-height: 100vh;
+}
+
+.balita-form-page {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+  margin: 0 auto;
+  animation: slideInDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-header-simple {
+  text-align: center;
+  margin-bottom: 35px;
+  padding-bottom: 25px;
+  border-bottom: 3px solid var(--primary-green);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.form-header-simple h1 {
+  font-size: 2.2rem;
+  color: var(--dark-text);
+  margin-bottom: 12px;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.form-subtitle-simple {
+  color: var(--light-text);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* =============================================== */
+/* SECTIONS & FORM GROUP */
+/* =============================================== */
+.form-balita-simple {
+  animation: fadeInUp 0.7s ease-out;
+}
+
+.form-section-simple {
+  margin-bottom: 30px;
+  padding: 25px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid var(--primary-green);
+  transition: all 0.3s ease;
+}
+
+.form-section-simple:hover {
+  background: #f0f5f3;
+  box-shadow: inset 0 2px 8px rgba(56, 142, 60, 0.1);
+}
+
+.section-title-simple {
+  color: var(--primary-green);
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--primary-green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group-page {
+  margin-bottom: 22px;
+  animation: fadeInUp 0.8s ease-out backwards;
+}
+
+.form-group-page:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.form-group-page:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.form-group-page:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.form-group-page:nth-child(4) {
+  animation-delay: 0.25s;
+}
+
+.form-group-page label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--dark-text);
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+.required-mark {
+  color: #e74c3c;
+  margin-left: 4px;
+  font-weight: 700;
+}
+
+.form-row-simple {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* =============================================== */
+/* INPUT, SELECT, & TEXTAREA STYLING */
+/* =============================================== */
+.form-group-page input,
+.form-group-page select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: white;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 0.2px;
+}
+
+.form-group-page input::placeholder,
+.form-group-page select::placeholder {
+  color: #a0a0a0;
+}
+
+.form-group-page input:focus,
+.form-group-page select:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 4px rgba(56, 142, 60, 0.15);
+  background-color: #fafbff;
+}
+
+.form-group-page input:hover,
+.form-group-page select:hover {
+  border-color: #b0b0b0;
+}
+
+.input-readonly {
+  background-color: #f0f0f0;
+  color: var(--dark-text);
+  font-weight: 600;
+  cursor: not-allowed;
+  border-color: #d0d0d0;
+}
+
+.input-error {
+  border-color: #e74c3c !important;
+  background-color: #fff5f5;
+}
+
+.input-error:focus {
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.15) !important;
+}
+
+.error-text {
+  display: block;
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  font-weight: 500;
+  animation: shake 0.3s ease-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* =============================================== */
+/* CHECKBOX STYLING */
+/* =============================================== */
+.form-group-page input[type="checkbox"] {
+  width: auto;
+  transform: scale(1.3);
+  margin-right: 10px;
+  accent-color: var(--primary-green);
+  cursor: pointer;
+}
+
+.form-group-page label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-hint {
+  font-size: 0.9rem;
+  color: var(--light-text);
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #e8f5e9;
+  border-radius: 6px;
+  border-left: 3px solid var(--primary-green);
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* =============================================== */
+/* TOMBOL AKSI (ACTIONS) */
+/* =============================================== */
+.form-actions-page {
+  margin-top: 35px;
+  padding-top: 25px;
+  border-top: 2px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  animation: fadeInUp 0.9s ease-out;
+}
+
+.btn-kembali,
+.btn-simpan {
+  padding: 14px 32px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-kembali {
+  background-color: #f0f0f0;
+  color: var(--dark-text);
+  border: 2px solid #d0d0d0;
+}
+
+.btn-kembali:hover:not(:disabled) {
+  background-color: #e0e0e0;
+  border-color: #c0c0c0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-simpan {
+  background: linear-gradient(135deg, var(--primary-green) 0%, #2e7d32 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(56, 142, 60, 0.3);
+}
+
+.btn-simpan:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2e7d32 0%, #27653b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 142, 60, 0.4);
+}
+
+.btn-kembali:disabled,
+.btn-simpan:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* =============================================== */
+/* LOADING SPINNER */
+/* =============================================== */
+.loading-container {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.spinner {
+  border: 5px solid #f0f0f0;
+  border-top: 5px solid var(--primary-green);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 25px;
+  box-shadow: 0 4px 12px rgba(56, 142, 60, 0.2);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container p {
+  color: var(--light-text);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* =============================================== */
+/* RESPONSIVE DESIGN */
+/* =============================================== */
+@media (max-width: 768px) {
+  .balita-form-page {
+    padding: 30px 20px;
+  }
+
+  .form-header-simple h1 {
+    font-size: 1.8rem;
+  }
+
+  .form-row-simple {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .form-section-simple {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-actions-page {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .form-actions-page button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .kelola-container {
+    padding: 15px 10px;
+  }
+
+  .balita-form-page {
+    padding: 20px 15px;
+    border-radius: 12px;
+  }
+
+  .form-header-simple h1 {
+    font-size: 1.5rem;
+  }
+
+  .form-header-simple {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+
+  .form-group-page {
+    margin-bottom: 18px;
+  }
+
+  .form-section-simple {
+    padding: 15px;
+  }
+
+  .section-title-simple {
+    font-size: 1.1rem;
+  }
+
+  .btn-kembali,
+  .btn-simpan {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+
+  .form-actions-page {
+    margin-top: 25px;
+    padding-top: 15px;
+  }
+}

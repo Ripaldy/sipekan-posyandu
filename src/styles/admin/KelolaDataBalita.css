@@ -1,0 +1,341 @@
+/* =============================================== */
+/* HEADER & FILTER STYLES */
+/* =============================================== */
+.kelola-container {
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
+  min-height: 100vh;
+}
+
+.kelola-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.kelola-header h1 {
+  font-size: 2.5rem;
+  color: var(--dark-text);
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn-tambah {
+  background: linear-gradient(135deg, var(--primary-green) 0%, #2e7d32 100%);
+  color: white;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(56, 142, 60, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-plus {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.btn-tambah:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 142, 60, 0.4);
+}
+
+.btn-tambah:active {
+  transform: translateY(0);
+}
+
+.filter-wrapper {
+  margin-bottom: 30px;
+}
+
+.filter-wrapper input {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  background-color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.filter-wrapper input:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 4px 12px rgba(56, 142, 60, 0.2);
+}
+
+.filter-wrapper input::placeholder {
+  color: #999;
+}
+
+/* =============================================== */
+/* TABEL RESPONSIF DENGAN STYLING MODERN */
+/* =============================================== */
+.table-wrapper {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.table-wrapper:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.content-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #d0d0d0;
+}
+
+/* 🔹 Header tabel diubah jadi hijau */
+.content-table thead {
+  background: linear-gradient(135deg, var(--primary-green) 0%, #2e7d32 100%);
+  border-bottom: 3px solid #1b5e20;
+}
+
+.content-table th {
+  padding: 18px 15px;
+  text-align: center;
+  font-weight: 700;
+  color: white; /* teks putih agar kontras */
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.content-table th:last-child {
+  border-right: none;
+}
+
+.content-table td {
+  padding: 16px 15px;
+  border-bottom: 1px solid #d0d0d0;
+  border-right: 1px solid #d0d0d0;
+  vertical-align: middle;
+  text-align: center;
+  color: var(--light-text);
+  transition: background-color 0.2s ease;
+}
+
+.content-table td:last-child {
+  border-right: none;
+}
+
+.content-table td strong {
+  color: var(--dark-text);
+  font-weight: 700;
+  display: block;
+}
+
+.content-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.content-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transform: scale(1.01);
+  box-shadow: inset 0 0 10px rgba(56, 142, 60, 0.05);
+}
+
+.content-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =============================================== */
+/* STATUS BADGE STYLING */
+/* =============================================== */
+.status-badge {
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+  display: inline-block;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+}
+
+.status-badge.normal {
+  background: linear-gradient(135deg, var(--primary-green) 0%, #2e7d32 100%);
+  box-shadow: 0 4px 12px rgba(56, 142, 60, 0.25);
+}
+
+.status-badge.resiko {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.25);
+}
+
+.status-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* =============================================== */
+/* ACTION BUTTONS STYLING */
+/* =============================================== */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-buttons button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.action-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-buttons button:active {
+  transform: translateY(0);
+}
+
+.icon-eye,
+.icon-edit,
+.icon-trash,
+.icon-toggle {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.btn-detail {
+  background-color: var(--primary-green);
+  color: white;
+}
+
+.btn-detail:hover {
+  background-color: #16a34a;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.btn-status {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.btn-status:hover {
+  background-color: #bfdbfe;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.15);
+}
+
+.btn-edit {
+  background-color: #fef08a;
+  color: #713f12;
+}
+
+.btn-edit:hover {
+  background-color: #fde047;
+  box-shadow: 0 2px 8px rgba(113, 63, 18, 0.15);
+}
+
+.btn-hapus {
+  background-color: #fecdd3;
+  color: #be123c;
+}
+
+.btn-hapus:hover {
+  background-color: #fbcfe8;
+  box-shadow: 0 2px 8px rgba(190, 18, 60, 0.15);
+}
+
+/* =============================================== */
+/* EMPTY STATE */
+/* =============================================== */
+.no-data-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--light-text);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* =============================================== */
+/* RESPONSIVE DESIGN */
+/* =============================================== */
+@media (max-width: 768px) {
+  .kelola-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .kelola-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .btn-tambah {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .content-table th {
+    padding: 12px 8px;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .content-table td {
+    padding: 12px 8px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .action-buttons button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .kelola-container {
+    padding: 15px 10px;
+  }
+
+  .kelola-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .content-table th,
+  .content-table td {
+    padding: 10px 5px;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .action-buttons button {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+  }
+}

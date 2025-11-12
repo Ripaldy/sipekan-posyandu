@@ -1,0 +1,23 @@
+.footer-posanak {
+  background: #2e7d32;
+  color: white;
+  padding: 25px 50px;
+  margin-top: 60px;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .footer-posanak {
+    padding: 20px;
+  }
+  .footer-content {
+    font-size: 0.9rem;
+  }
+}

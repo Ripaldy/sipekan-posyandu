@@ -1,0 +1,165 @@
+.detail-container {
+  padding: 20px;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.detail-header h1 {
+  font-size: 2rem;
+  color: var(--dark-text);
+}
+
+/* Tombol-tombol di header */
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-kembali,
+.btn-print {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-kembali {
+  background-color: #ecf0f1;
+  color: #333;
+  border: 1px solid #bdc3c7;
+}
+
+.btn-kembali:hover {
+  background-color: #dfe6e9;
+}
+
+.btn-print {
+  background-color: var(--posanak-danger);
+  color: white;
+}
+
+.btn-print:hover {
+  background-color: #c0392b;
+}
+
+/* Layout utama (flexbox vertikal) */
+.detail-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.detail-card {
+  background-color: var(--posanak-surface);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+}
+
+.detail-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--posanak-border);
+}
+
+/* Tata letak info personal */
+.info-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-card li {
+  font-size: 1rem;
+  padding: 12px 0;
+  display: flex;
+  align-items: baseline;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-card li:last-child {
+  border-bottom: none;
+}
+
+.info-card li strong {
+  font-weight: 600;
+  color: var(--dark-text);
+  width: 180px;
+  flex-shrink: 0;
+}
+
+.info-card li span {
+  color: var(--light-text);
+}
+
+/* Tabel responsif dengan border di setiap kolom */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px;
+}
+
+.history-table th,
+.history-table td {
+  padding: 12px 15px;
+  text-align: center;
+  border: 1px solid var(--posanak-border);
+}
+
+.history-table thead th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: var(--dark-text);
+  white-space: nowrap;
+  border: 1px solid var(--posanak-border);
+}
+
+.history-table tbody td {
+  border: 1px solid var(--posanak-border);
+}
+
+.history-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* ======================================= */
+/* ====== CSS UNTUK PROSES CETAK/PDF ===== */
+/* ======================================= */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .detail-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .history-table th,
+  .history-table td {
+    border: 1px solid #333;
+  }
+}

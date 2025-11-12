@@ -1,0 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+/* Global CSS Variables */
+:root {
+  --primary-green: #388e3c;
+  --light-green: #66bb6a;
+  --dark-text: #2c3e50;
+  --light-text: #7f8c8d;
+  --white: #ffffff;
+  --posanak-bg: #f0f4f8;
+  --posanak-surface: #ffffff;
+  --shadow-light: 0 1px 6px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 6px 18px rgba(0, 0, 0, 0.15);
+  --posanak-border: #dfe6e9;
+  --posanak-danger: #e74c3c;
+}
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background-color: var(--posanak-bg);
+  color: var(--dark-text);
+  min-height: 100vh;
+}
+
+/* Overlay for mobile menu */
+body.menu-open {
+  overflow: hidden;
+}
+
+body.menu-open::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.3s ease;
+}

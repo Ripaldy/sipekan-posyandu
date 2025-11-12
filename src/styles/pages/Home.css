@@ -1,0 +1,533 @@
+/* ==================== CSS VARIABLES ==================== */
+:root {
+  --primary-green: #16a34a;
+  --primary-green-dark: #15803d;
+  --primary-gradient: linear-gradient(to right, #16a34a, #10b981);
+  --text-dark: #111827;
+  --text-light: #4b5563;
+  --bg-light: #ffffff;
+  --bg-soft: #f9fafb;
+  --border-color: #e5e7eb;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseScale {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes waveAnimation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* ==================== GENERAL ==================== */
+.home-wrapper {
+  width: 100%;
+  background-color: var(--bg-light);
+  overflow-x: hidden;
+}
+
+/* ==================== FLOATING SHAPES ==================== */
+.floating-shapes-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+}
+
+.floating-shape-1 {
+  width: 400px;
+  height: 400px;
+  top: -80px;
+  right: -120px;
+  background: rgba(134, 239, 172, 0.25);
+  animation: float 8s ease-in-out infinite;
+}
+
+.floating-shape-2 {
+  width: 400px;
+  height: 400px;
+  bottom: -80px;
+  left: -120px;
+  background: rgba(165, 243, 252, 0.25);
+  animation: float 10s ease-in-out infinite 1s;
+}
+
+.floating-shape-3 {
+  width: 300px;
+  height: 300px;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(16, 185, 129, 0.15);
+  animation: float 9s ease-in-out infinite 2s;
+}
+
+/* ==================== HERO SECTION ==================== */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 120px 20px 80px;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    var(--bg-light)
+  );
+  z-index: 1;
+}
+
+.hero-content-wrapper {
+  position: relative;
+  z-index: 10;
+  max-width: 1280px;
+  width: 100%;
+}
+
+/* ==================== HERO TEXT & BADGE ==================== */
+.hero-text-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(220, 252, 231, 1);
+  border: 1px solid rgba(167, 243, 208, 1);
+  border-radius: 9999px;
+  padding: 12px 24px;
+  margin-bottom: 32px;
+  animation: slideInDown 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.badge-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--primary-green-dark);
+}
+
+.badge-text {
+  color: var(--primary-green-dark);
+  font-weight: 600;
+}
+
+/* ==================== HERO TITLE ==================== */
+.hero-title {
+  font-size: 56px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: #1f7a4d;
+  line-height: 1.2;
+  animation: slideInDown 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.hero-title-highlight {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==================== HERO SUBTITLE ==================== */
+.hero-subtitle {
+  font-size: 18px;
+  color: var(--text-light);
+  max-width: 672px;
+  margin: 0 auto 40px;
+  line-height: 1.75;
+  animation: slideInDown 0.8s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+/* ==================== HERO CTA BUTTON ==================== */
+.hero-cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2);
+  animation: slideInUp 0.8s ease-out 0.6s forwards;
+  opacity: 0;
+}
+
+.hero-cta-button:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 15px 30px rgba(22, 163, 74, 0.3);
+}
+
+/* ==================== FEATURES SECTION ==================== */
+.features-section {
+  padding: 100px 20px;
+  background: linear-gradient(to bottom, var(--bg-light), var(--bg-soft));
+  position: relative;
+}
+
+.features-container {
+  max-width: 1408px;
+  margin: 0 auto;
+}
+
+/* ==================== FEATURES HEADER ==================== */
+.features-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.features-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+}
+
+.features-title-divider {
+  width: 96px;
+  height: 4px;
+  background: var(--primary-gradient);
+  margin: 0 auto;
+  border-radius: 9999px;
+}
+
+/* ==================== FEATURES GRID ==================== */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+}
+
+/* ==================== FEATURE CARD ==================== */
+.feature-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.4s ease-out;
+  cursor: pointer;
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-color);
+}
+
+.feature-card:hover,
+.feature-card.active {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px var(--shadow-color, rgba(0, 0, 0, 0.1));
+}
+
+.feature-bg-gradient {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+}
+.feature-bg-gradient.from-red-50 {
+  background: #fef2f2;
+}
+.feature-bg-gradient.from-blue-50 {
+  background: #eff6ff;
+}
+.feature-bg-gradient.from-green-50 {
+  background: #f0fdf4;
+}
+
+.feature-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  border-top-width: 4px;
+  border-bottom-width: 0;
+  border-left-width: 0;
+  border-right-width: 0;
+  border-style: solid;
+}
+
+.feature-card:hover .feature-border {
+  opacity: 1;
+}
+
+.feature-border.border-red-500 {
+  border-color: #ef4444;
+}
+.feature-border.border-blue-500 {
+  border-color: #3b82f6;
+}
+.feature-border.border-green-500 {
+  border-color: #22c55e;
+}
+
+.feature-card-content {
+  position: relative;
+  padding: 40px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+
+/* ==================== FEATURE ICON ==================== */
+.feature-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  transition: transform 0.4s ease, background-color 0.4s ease;
+}
+
+.feature-card:hover .feature-icon-wrapper {
+  transform: scale(1.1) rotate(-10deg);
+}
+
+.feature-icon-wrapper.bg-red-100 {
+  background-color: #fee2e2;
+}
+.feature-icon-wrapper.bg-blue-100 {
+  background-color: #dbeafe;
+}
+.feature-icon-wrapper.bg-green-100 {
+  background-color: #dcfce7;
+}
+
+.feature-icon {
+  width: 32px;
+  height: 32px;
+}
+
+/* ==================== FEATURE TITLE & DESCRIPTION ==================== */
+.feature-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+  transition: color 0.3s ease;
+}
+
+.feature-card:hover .feature-card-title {
+  color: var(--primary-green);
+}
+
+.feature-card-description {
+  font-size: 15px;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* ==================== FEATURES STATISTICS BOTTOM ==================== */
+.features-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 100px;
+  padding-top: 80px;
+  border-top: 1px solid var(--border-color);
+}
+
+.features-stat-card {
+  padding: 32px;
+  border-radius: 16px;
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.features-stat-card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-8px);
+  border-color: var(--primary-green);
+}
+
+.features-stat-icon-wrapper {
+  margin: 0 auto 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ecfdf5;
+}
+
+.features-stat-icon {
+  color: var(--primary-green);
+}
+
+.features-stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary-green-dark);
+}
+
+.features-stat-label {
+  font-size: 15px;
+  color: var(--text-light);
+  margin-top: 8px;
+}
+
+/* ==================== WAVE SECTION ==================== */
+.wave-container {
+  height: auto;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--bg-soft);
+}
+.wave-svg {
+  display: block;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+/* (Same responsive styles as before, adjusted for new elements) */
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: 44px;
+  }
+  .hero-subtitle {
+    font-size: 17px;
+    max-width: 550px;
+  }
+  .features-title {
+    font-size: 32px;
+  }
+  .features-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: auto;
+    padding: 100px 20px 60px;
+  }
+  .hero-title {
+    font-size: 36px;
+  }
+  .hero-subtitle {
+    font-size: 16px;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .feature-card:hover,
+  .feature-card.active {
+    transform: translateY(-5px);
+  }
+  .features-stats {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 60px;
+    padding-top: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 80px 16px 40px;
+  }
+  .hero-badge {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  .hero-title {
+    font-size: 32px;
+    line-height: 1.3;
+  }
+  .hero-subtitle {
+    font-size: 15px;
+  }
+  .hero-cta-button {
+    padding: 14px 24px;
+    font-size: 15px;
+  }
+  .features-section {
+    padding: 60px 16px;
+  }
+  .features-header {
+    margin-bottom: 40px;
+  }
+  .features-title {
+    font-size: 28px;
+  }
+  .features-stat-card {
+    padding: 24px;
+  }
+  .features-stat-number {
+    font-size: 28px;
+  }
+}
