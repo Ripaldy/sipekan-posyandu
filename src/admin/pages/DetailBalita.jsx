@@ -138,7 +138,7 @@ const DetailBalita = () => {
   }, [id]);
 
   const handlePrint = useReactToPrint({
-    content: () => componentToPrintRef.current,
+    contentRef: componentToPrintRef,
     documentTitle: `Data Pertumbuhan - ${dataAnak?.nama || "Anak"}`,
   });
 
