@@ -1,27 +1,60 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  getKegiatanById,
+  createKegiatan,
+  updateKegiatan,
+} from "../../services/kegiatanService";
 import "../../styles/admin/FormKegiatan.css";
 
 const FormKegiatan = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const editData = location.state?.editData || null;
+  const { id } = useParams();
+  const isEditing = !!id;
 
-  const [formData, setFormData] = useState(
-    editData || {
-      judul: "",
-      deskripsi: "",
-      jadwal: "",
-      posyandu: "",
-      kategori: "imunisasi",
-      pemateri: "",
-      lokasi: "",
-      target: "",
-      status: "Terjadwal",
-    }
-  );
+  const [formData, setFormData] = useState({
+    judul: "",
+    deskripsi: "",
+    jadwal: "",
+    posyandu: "",
+    kategori: "imunisasi",
+    pemateri: "",
+    lokasi: "",
+    target: "",
+    status: "Terjadwal",
+  });
 
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(isEditing);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Fetch kegiatan data if editing
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isEditing) {
+        const { data, error } = await getKegiatanById(id);
+        if (data && !error) {
+          setFormData({
+            judul: data.judul || "",
+            deskripsi: data.deskripsi || "",
+            jadwal: data.tanggal_waktu || "",
+            posyandu: data.lokasi_posyandu || "",
+            kategori: data.kategori || "imunisasi",
+            pemateri: data.penanggung_jawab || "",
+            lokasi: data.lokasi || "",
+            target: data.target_peserta || "",
+            status: data.status || "Terjadwal",
+          });
+        } else {
+          alert("Data kegiatan tidak ditemukan!");
+          navigate("/admin/kelola-kegiatan");
+        }
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [id, isEditing, navigate]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -49,17 +82,48 @@ const FormKegiatan = () => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Data kegiatan:", formData);
-      navigate("/admin/kelola-kegiatan", {
-        state: {
-          successMessage: editData
-            ? "Kegiatan berhasil diperbarui"
-            : "Kegiatan berhasil ditambahkan",
-        },
-      });
+      setIsSaving(true);
+
+      try {
+        // Transform data to match Supabase schema
+        const kegiatanData = {
+          judul: formData.judul,
+          deskripsi: formData.deskripsi,
+          tanggal_waktu: formData.jadwal,
+          lokasi_posyandu: formData.posyandu,
+          kategori: formData.kategori,
+          penanggung_jawab: formData.pemateri,
+          lokasi: formData.lokasi,
+          target_peserta: formData.target,
+          status: formData.status,
+        };
+
+        let result;
+        if (isEditing) {
+          result = await updateKegiatan(id, kegiatanData);
+        } else {
+          result = await createKegiatan(kegiatanData);
+        }
+
+        if (result.data && !result.error) {
+          alert(
+            isEditing
+              ? "Kegiatan berhasil diperbarui!"
+              : "Kegiatan berhasil ditambahkan!"
+          );
+          navigate("/admin/kelola-kegiatan");
+        } else {
+          throw new Error(result.error?.message || "Gagal menyimpan kegiatan");
+        }
+      } catch (error) {
+        console.error("Submit error:", error);
+        alert(`Terjadi kesalahan: ${error.message}`);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -80,6 +144,14 @@ const FormKegiatan = () => {
 
   const handleCancel = () => navigate("/admin/kelola-kegiatan");
 
+  if (isLoading) {
+    return (
+      <div className="form-kegiatan-page-container">
+        <p>Memuat data kegiatan...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="form-kegiatan-page-container">
       <div className="form-kegiatan-page-wrapper">
@@ -87,13 +159,13 @@ const FormKegiatan = () => {
         <div className="form-kegiatan-page-header">
           {/* Judul di tengah */}
           <h1 className="form-kegiatan-page-title-center">
-            {editData ? "Edit Kegiatan" : "Tambah Kegiatan"}
+            {isEditing ? "Edit Kegiatan" : "Tambah Kegiatan"}
           </h1>
 
           {/* Subjudul dan tombol kembali */}
           <div className="form-kegiatan-page-subheader">
             <p className="form-kegiatan-page-subtitle">
-              {editData
+              {isEditing
                 ? "Update informasi kegiatan kesehatan"
                 : "Buat kegiatan kesehatan baru"}
             </p>
@@ -250,6 +322,10 @@ const FormKegiatan = () => {
                   <option value="imunisasi">Imunisasi</option>
                   <option value="edukasi">Edukasi</option>
                   <option value="pemeriksaan">Pemeriksaan</option>
+                  <option value="posyandu">Posyandu</option>
+                  <option value="penyuluhan">Penyuluhan</option>
+                  <option value="konseling">Konseling</option>
+                  <option value="pemantauan">Pemantauan</option>
                 </select>
                 {errors.kategori && (
                   <span className="form-page-error-text">
@@ -355,8 +431,10 @@ const FormKegiatan = () => {
               onClick={handleSubmit}
               className="form-page-btn form-page-btn-submit"
               type="submit"
+              disabled={isSaving}
             >
-              <span className="icon-save">▼</span> Simpan Kegiatan
+              <span className="icon-save">▼</span>{" "}
+              {isSaving ? "Menyimpan..." : "Simpan Kegiatan"}
             </button>
           </div>
         </div>

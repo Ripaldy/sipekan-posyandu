@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { getBalitaById, createBalita, updateBalita } from "../../services/balitaService";
 import "../../styles/admin/FormBalita.css";
 
 const hitungUmur = (tanggalLahir) => {
@@ -31,8 +32,12 @@ const validateField = (name, value) => {
       return value < 1 ? "Pengukuran minimal ke-1" : "";
     case "jenisKelamin":
       return value === "" ? "Pilih jenis kelamin" : "";
-    case "namaOrtu":
-      return value.length < 3 ? "Nama orang tua minimal 3 karakter" : "";
+    case "namaIbu":
+      return value.length < 3 ? "Nama ibu minimal 3 karakter" : "";
+    case "beratLahir":
+      return value < 0.5 || value > 10 ? "Berat lahir harus antara 0.5-10 kg" : "";
+    case "tinggiLahir":
+      return value < 30 || value > 70 ? "Tinggi lahir harus antara 30-70 cm" : "";
     case "tanggalLahir":
       return value === "" ? "Tanggal lahir wajib diisi" : "";
     case "desa":
@@ -44,38 +49,6 @@ const validateField = (name, value) => {
   }
 };
 
-const findBalitaById = (id) => {
-  const mockDataBalita = [
-    {
-      id: 1,
-      nama: "Budi Santoso",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-05-20",
-      pengukuranKe: 3,
-      namaOrtu: "Santi Dewi",
-      tinggiBadan: 75.5,
-      beratBadan: 10.2,
-      lila: 14.5,
-      desa: "Sukamekar",
-      posyandu: "Anggrek",
-    },
-    {
-      id: 2,
-      nama: "Alya Putri",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2024-01-10",
-      pengukuranKe: 2,
-      namaOrtu: "Rudi Hartono",
-      tinggiBadan: 68.0,
-      beratBadan: 8.5,
-      lila: 13.2,
-      desa: "Sukatani",
-      posyandu: "Mawar",
-    },
-  ];
-  return mockDataBalita.find((d) => d.id === parseInt(id));
-};
-
 const FormBalita = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -85,31 +58,44 @@ const FormBalita = () => {
     nama: "",
     jenisKelamin: "",
     tanggalLahir: "",
-    namaOrtu: "",
-    beratBadan: "",
-    tinggiBadan: "",
-    lila: "",
-    pengukuranKe: "",
-    desa: "",
-    posyandu: "",
+    namaIbu: "",
+    namaAyah: "",
+    alamat: "",
+    beratLahir: "",
+    tinggiLahir: "",
+    statusGizi: "normal",
   });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Fetch balita data if editing
   useEffect(() => {
-    if (isEditing) {
-      const data = findBalitaById(id);
-      if (data) {
-        const { umur: _umur, statusGizi: _statusGizi, ...rest } = data;
-        setFormData(rest);
-      } else {
-        alert("Data Balita tidak ditemukan!");
-        navigate("/admin/kelola-data-balita");
+    const fetchData = async () => {
+      if (isEditing) {
+        const { data, error } = await getBalitaById(id);
+        if (data && !error) {
+          setFormData({
+            nama: data.nama || "",
+            jenisKelamin: data.jenis_kelamin || "",
+            tanggalLahir: data.tanggal_lahir || "",
+            namaIbu: data.nama_ibu || "",
+            namaAyah: data.nama_ayah || "",
+            alamat: data.alamat || "",
+            beratLahir: data.berat_lahir || "",
+            tinggiLahir: data.tinggi_lahir || "",
+            statusGizi: data.status_gizi || "normal",
+          });
+        } else {
+          alert("Data Balita tidak ditemukan!");
+          navigate("/admin/kelola-data-balita");
+        }
       }
-    }
-    setIsLoading(false);
+      setIsLoading(false);
+    };
+
+    fetchData();
   }, [id, isEditing, navigate]);
 
   const umurTerkini = useMemo(
@@ -133,11 +119,14 @@ const FormBalita = () => {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
     const allTouched = {};
-    Object.keys(formData).forEach((key) => {
+    
+    // Validate required fields
+    const requiredFields = ['nama', 'jenisKelamin', 'tanggalLahir', 'namaIbu', 'beratLahir', 'tinggiLahir'];
+    requiredFields.forEach((key) => {
       const error = validateField(key, formData[key]);
       if (error) newErrors[key] = error;
       allTouched[key] = true;
@@ -152,19 +141,44 @@ const FormBalita = () => {
     }
 
     setIsSaving(true);
-    setTimeout(() => {
-      console.log(isEditing ? "Update Data:" : "Tambah Data:", {
-        ...formData,
-        umur: umurTerkini,
-      });
-      setIsSaving(false);
-      alert(
-        isEditing
+
+    try {
+      // Transform data to match Supabase schema
+      const balitaData = {
+        nama: formData.nama,
+        jenis_kelamin: formData.jenisKelamin,
+        tanggal_lahir: formData.tanggalLahir,
+        nama_ibu: formData.namaIbu || null,
+        nama_ayah: formData.namaAyah || null,
+        alamat: formData.alamat || null,
+        berat_lahir: formData.beratLahir ? parseFloat(formData.beratLahir) : null,
+        tinggi_lahir: formData.tinggiLahir ? parseFloat(formData.tinggiLahir) : null,
+        status_gizi: formData.statusGizi || 'normal',
+      };
+
+      let result;
+      if (isEditing) {
+        result = await updateBalita(id, balitaData);
+      } else {
+        result = await createBalita(balitaData);
+      }
+
+      if (result.data && !result.error) {
+        const successMessage = isEditing
           ? `Data ${formData.nama} berhasil diubah!`
-          : `Data ${formData.nama} berhasil ditambahkan!`
-      );
-      navigate("/admin/kelola-data-balita");
-    }, 800);
+          : `✅ Data ${formData.nama} berhasil ditambahkan!\n\nKode Balita: ${result.data.kode_balita}\n\nSimpan kode ini untuk referensi.`;
+        
+        alert(successMessage);
+        navigate("/admin/kelola-data-balita");
+      } else {
+        throw new Error(result.error?.message || 'Gagal menyimpan data');
+      }
+    } catch (error) {
+      console.error("Submit error:", error);
+      alert(`Terjadi kesalahan: ${error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isLoading && isEditing) {
@@ -179,7 +193,7 @@ const FormBalita = () => {
   }
 
   return (
-    <div className="kelola-container" data-aos="fade-in">
+    <div className="kelola-container">
       <div className="balita-form-page">
         <div className="form-header-simple">
           <h1>{isEditing ? "Edit Data Balita" : "Tambah Data Balita Baru"}</h1>
@@ -281,24 +295,82 @@ const FormBalita = () => {
             <h3 className="section-title-simple">
               Informasi Orang Tua & Lokasi
             </h3>
+            
             <div className="form-group-page">
               <label>
-                Nama Orang Tua/Wali <span className="required-mark">*</span>
+                Nama Ibu <span className="required-mark">*</span>
               </label>
               <input
                 type="text"
-                name="namaOrtu"
-                value={formData.namaOrtu || ""}
+                name="namaIbu"
+                value={formData.namaIbu || ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                placeholder="Masukkan nama ibu"
                 className={
-                  errors.namaOrtu && touched.namaOrtu ? "input-error" : ""
+                  errors.namaIbu && touched.namaIbu ? "input-error" : ""
                 }
-                placeholder="Masukkan nama orang tua/wali"
               />
-              {errors.namaOrtu && touched.namaOrtu && (
+              {errors.namaIbu && touched.namaIbu && (
                 <span className="error-text">
-                  <span className="error-icon">●</span> {errors.namaOrtu}
+                  <span className="error-icon">●</span> {errors.namaIbu}
+                </span>
+              )}
+            </div>
+
+            <div className="form-group-page">
+              <label>Nama Ayah</label>
+              <input
+                type="text"
+                name="namaAyah"
+                value={formData.namaAyah || ""}
+                onChange={handleChange}
+                placeholder="Masukkan nama ayah (opsional)"
+              />
+            </div>
+
+            <div className="form-group-page">
+              <label>
+                Berat Lahir (kg) <span className="required-mark">*</span>
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                name="beratLahir"
+                value={formData.beratLahir || ""}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Contoh: 3.2"
+                className={
+                  errors.beratLahir && touched.beratLahir ? "input-error" : ""
+                }
+              />
+              {errors.beratLahir && touched.beratLahir && (
+                <span className="error-text">
+                  <span className="error-icon">●</span> {errors.beratLahir}
+                </span>
+              )}
+            </div>
+
+            <div className="form-group-page">
+              <label>
+                Tinggi Lahir (cm) <span className="required-mark">*</span>
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                name="tinggiLahir"
+                value={formData.tinggiLahir || ""}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Contoh: 50"
+                className={
+                  errors.tinggiLahir && touched.tinggiLahir ? "input-error" : ""
+                }
+              />
+              {errors.tinggiLahir && touched.tinggiLahir && (
+                <span className="error-text">
+                  <span className="error-icon">●</span> {errors.tinggiLahir}
                 </span>
               )}
             </div>
@@ -306,26 +378,20 @@ const FormBalita = () => {
             <div className="form-row-simple">
               <div className="form-group-page">
                 <label>
-                  Desa/Kel <span className="required-mark">*</span>
+                  Alamat
                 </label>
                 <input
                   type="text"
-                  name="desa"
-                  value={formData.desa || ""}
+                  name="alamat"
+                  value={formData.alamat || ""}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={errors.desa && touched.desa ? "input-error" : ""}
-                  placeholder="Masukkan nama desa/kelurahan"
+                  placeholder="Masukkan alamat lengkap"
                 />
-                {errors.desa && touched.desa && (
-                  <span className="error-text">
-                    <span className="error-icon">●</span> {errors.desa}
-                  </span>
-                )}
               </div>
               <div className="form-group-page">
                 <label>
-                  Posyandu <span className="required-mark">*</span>
+                  Posyandu
                 </label>
                 <input
                   type="text"
@@ -333,138 +399,26 @@ const FormBalita = () => {
                   value={formData.posyandu || ""}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={
-                    errors.posyandu && touched.posyandu ? "input-error" : ""
-                  }
                   placeholder="Cth: Posyandu Anggrek"
                 />
-                {errors.posyandu && touched.posyandu && (
-                  <span className="error-text">
-                    <span className="error-icon">●</span> {errors.posyandu}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* DATA PENGUKURAN */}
-          <div className="form-section-simple">
-            <h3 className="section-title-simple">Data Pengukuran</h3>
-            <div className="form-row-simple">
-              <div className="form-group-page">
-                <label>
-                  Berat Badan (kg) <span className="required-mark">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="beratBadan"
-                  value={formData.beratBadan || ""}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  step="0.1"
-                  placeholder="Cth: 8.5"
-                  className={
-                    errors.beratBadan && touched.beratBadan ? "input-error" : ""
-                  }
-                />
-                {errors.beratBadan && touched.beratBadan && (
-                  <span className="error-text">
-                    <span className="error-icon">●</span> {errors.beratBadan}
-                  </span>
-                )}
-              </div>
-              <div className="form-group-page">
-                <label>
-                  Tinggi Badan (cm) <span className="required-mark">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="tinggiBadan"
-                  value={formData.tinggiBadan || ""}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  step="0.1"
-                  placeholder="Cth: 75.5"
-                  className={
-                    errors.tinggiBadan && touched.tinggiBadan
-                      ? "input-error"
-                      : ""
-                  }
-                />
-                {errors.tinggiBadan && touched.tinggiBadan && (
-                  <span className="error-text">
-                    <span className="error-icon">●</span> {errors.tinggiBadan}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="form-row-simple">
-              <div className="form-group-page">
-                <label>
-                  LILA (cm) <span className="required-mark">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="lila"
-                  value={formData.lila || ""}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  step="0.1"
-                  placeholder="Cth: 14.5"
-                  className={errors.lila && touched.lila ? "input-error" : ""}
-                />
-                {errors.lila && touched.lila && (
-                  <span className="error-text">
-                    <span className="error-icon">●</span> {errors.lila}
-                  </span>
-                )}
-              </div>
-              <div className="form-group-page">
-                <label>
-                  Pengukuran Ke- <span className="required-mark">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="pengukuranKe"
-                  value={formData.pengukuranKe || ""}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  min="1"
-                  placeholder="1"
-                  className={
-                    errors.pengukuranKe && touched.pengukuranKe
-                      ? "input-error"
-                      : ""
-                  }
-                />
-                {errors.pengukuranKe && touched.pengukuranKe && (
-                  <span className="error-text">
-                    <span className="error-icon">●</span> {errors.pengukuranKe}
-                  </span>
-                )}
               </div>
             </div>
 
             <div className="form-group-page">
               <label>
-                <input
-                  type="checkbox"
-                  name="isPengukuranPertama"
-                  checked={
-                    formData.pengukuranKe === "1" || formData.pengukuranKe === 1
-                  }
-                  readOnly
-                />
-                Pengukuran Pertama
+                Status Gizi
               </label>
-              {formData.pengukuranKe && (
-                <p className="checkbox-hint">
-                  {formData.pengukuranKe === "1" || formData.pengukuranKe === 1
-                    ? "Ini adalah pengukuran pertama anak."
-                    : "Tidak dicentang karena ini bukan pengukuran pertama."}
-                </p>
-              )}
+              <select
+                name="statusGizi"
+                value={formData.statusGizi || "normal"}
+                onChange={handleChange}
+              >
+                <option value="normal">Normal</option>
+                <option value="stunting">Stunting</option>
+                <option value="gizi buruk">Gizi Buruk</option>
+                <option value="gizi kurang">Gizi Kurang</option>
+                <option value="gizi lebih">Gizi Lebih</option>
+              </select>
             </div>
           </div>
 

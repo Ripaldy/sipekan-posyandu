@@ -1,125 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Users, Filter } from "lucide-react";
+import { getAllBalita } from "../../services/balitaService";
 import "../../styles/admin/AnakTerdaftar.css";
+
+const hitungUmur = (tanggalLahir) => {
+  if (!tanggalLahir) return "0 bulan";
+  const tglLahir = new Date(tanggalLahir);
+  const hariIni = new Date();
+  let tahun = hariIni.getFullYear() - tglLahir.getFullYear();
+  let bulan = hariIni.getMonth() - tglLahir.getMonth();
+
+  if (bulan < 0 || (bulan === 0 && hariIni.getDate() < tglLahir.getDate())) {
+    tahun--;
+    bulan += 12;
+  }
+  
+  const totalBulan = tahun * 12 + bulan;
+  if (totalBulan < 12) {
+    return `${totalBulan} bulan`;
+  } else {
+    return `${tahun} tahun ${bulan} bulan`;
+  }
+};
 
 const AnakTerdaftar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterGender, setFilterGender] = useState("semua");
+  const [anakData, setAnakData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const anakData = [
-    {
-      id: 1,
-      nama: "Budi Santoso",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-06-15",
-      umur: "24 bulan",
-      desaKel: "Desa Makmur",
-      namaOrtu: "Santoso",
-      posyandu: "Posyandu Sejahtera",
-      bb: 12.5,
-      tb: 87.5,
-      lila: 14.2,
-      status: "Normal",
-    },
-    {
-      id: 2,
-      nama: "Siti Nurhaliza",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-08-20",
-      umur: "18 bulan",
-      desaKel: "Desa Sejahtera",
-      namaOrtu: "Nur Haliza",
-      posyandu: "Posyandu Maju",
-      bb: 10.8,
-      tb: 82.3,
-      lila: 13.5,
-      status: "Normal",
-    },
-    {
-      id: 3,
-      nama: "Ahmad Rahman",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-10-10",
-      umur: "12 bulan",
-      desaKel: "Desa Makmur",
-      namaOrtu: "Rahman",
-      posyandu: "Posyandu Sehat",
-      bb: 8.5,
-      tb: 72.0,
-      lila: 12.1,
-      status: "Stunting",
-    },
-    {
-      id: 4,
-      nama: "Dewi Lestari",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-02-05",
-      umur: "30 bulan",
-      desaKel: "Desa Jaya",
-      namaOrtu: "Lestari",
-      posyandu: "Posyandu Bersama",
-      bb: 13.2,
-      tb: 92.5,
-      lila: 14.8,
-      status: "Normal",
-    },
-    {
-      id: 5,
-      nama: "Rudi Hartono",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-04-12",
-      umur: "15 bulan",
-      desaKel: "Desa Sejahtera",
-      namaOrtu: "Hartono",
-      posyandu: "Posyandu Maju",
-      bb: 9.2,
-      tb: 76.5,
-      lila: 12.8,
-      status: "Stunting",
-    },
-    {
-      id: 6,
-      nama: "Maya Kusuma",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-07-18",
-      umur: "22 bulan",
-      desaKel: "Desa Jaya",
-      namaOrtu: "Kusuma",
-      posyandu: "Posyandu Sehat",
-      bb: 11.5,
-      tb: 84.2,
-      lila: 13.9,
-      status: "Normal",
-    },
-    {
-      id: 7,
-      nama: "Toni Wijaya",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-03-25",
-      umur: "28 bulan",
-      desaKel: "Desa Makmur",
-      namaOrtu: "Wijaya",
-      posyandu: "Posyandu Sejahtera",
-      bb: 12.8,
-      tb: 90.0,
-      lila: 14.5,
-      status: "Normal",
-    },
-    {
-      id: 8,
-      nama: "Lisa Maulana",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-09-08",
-      umur: "20 bulan",
-      desaKel: "Desa Indah",
-      namaOrtu: "Maulana",
-      posyandu: "Posyandu Bersama",
-      bb: 10.2,
-      tb: 80.5,
-      lila: 13.2,
-      status: "Normal",
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await getAllBalita();
+      if (data && !error) {
+        const transformedData = data.map((balita) => ({
+          id: balita.id,
+          nama: balita.nama,
+          jenisKelamin: balita.jenis_kelamin,
+          tanggalLahir: balita.tanggal_lahir,
+          umur: hitungUmur(balita.tanggal_lahir),
+          alamat: balita.alamat,
+          namaOrtu: balita.nama_ortu,
+          posyandu: balita.posyandu,
+          statusGizi: balita.status_gizi,
+        }));
+        setAnakData(transformedData);
+      } else {
+        console.error("Error fetching balita:", error);
+        setAnakData([]);
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   const filteredData = anakData.filter((anak) => {
     const matchSearch = anak.nama
@@ -129,6 +63,14 @@ const AnakTerdaftar = () => {
       filterGender === "semua" || anak.jenisKelamin === filterGender;
     return matchSearch && matchGender;
   });
+
+  if (isLoading) {
+    return (
+      <div className="page-container">
+        <p>Memuat data anak terdaftar...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
@@ -179,12 +121,11 @@ const AnakTerdaftar = () => {
               <th>Nama</th>
               <th>Jenis Kelamin</th>
               <th>Tanggal Lahir</th>
-              <th>Desa/Kel</th>
+              <th>Umur</th>
+              <th>Alamat</th>
               <th>Nama Ortu</th>
               <th>Posyandu</th>
-              <th>BB (kg)</th>
-              <th>TB (cm)</th>
-              <th>LILA (cm)</th>
+              <th>Status Gizi</th>
             </tr>
           </thead>
           <tbody>
@@ -193,18 +134,35 @@ const AnakTerdaftar = () => {
                 <tr key={anak.id}>
                   <td>{anak.nama}</td>
                   <td>{anak.jenisKelamin}</td>
-                  <td>{anak.tanggalLahir}</td>
-                  <td>{anak.desaKel}</td>
+                  <td>
+                    {new Date(anak.tanggalLahir).toLocaleDateString("id-ID", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
+                  </td>
+                  <td>{anak.umur}</td>
+                  <td>{anak.alamat || "-"}</td>
                   <td>{anak.namaOrtu}</td>
-                  <td>{anak.posyandu}</td>
-                  <td>{anak.bb}</td>
-                  <td>{anak.tb}</td>
-                  <td>{anak.lila}</td>
+                  <td>{anak.posyandu || "-"}</td>
+                  <td>
+                    <span
+                      className={`status-badge ${
+                        anak.statusGizi?.toLowerCase() === "stunting"
+                          ? "status-stunting"
+                          : anak.statusGizi?.toLowerCase() === "normal"
+                          ? "status-normal"
+                          : "status-lainnya"
+                      }`}
+                    >
+                      {anak.statusGizi || "Normal"}
+                    </span>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="9" className="no-data">
+                <td colSpan="8" className="no-data">
                   Tidak ada data yang ditemukan
                 </td>
               </tr>

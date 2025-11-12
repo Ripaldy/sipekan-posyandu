@@ -185,6 +185,28 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
+/* Kode Balita Badge */
+.kode-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1e40af;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  display: inline-block;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+  border: 1px solid #93c5fd;
+  box-shadow: 0 2px 6px rgba(30, 64, 175, 0.15);
+  transition: all 0.2s ease;
+}
+
+.kode-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(30, 64, 175, 0.25);
+  background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+}
+
 /* =============================================== */
 /* ACTION BUTTONS STYLING */
 /* =============================================== */

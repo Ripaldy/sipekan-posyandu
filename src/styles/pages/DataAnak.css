@@ -204,6 +204,30 @@
   font-weight: 500;
 }
 
+/* Kode Balita Highlight Row */
+.data-table tr.kode-row {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+  border-left: 4px solid #3b82f6;
+}
+
+.data-table tr.kode-row:hover td {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+}
+
+.kode-highlight {
+  font-family: 'Courier New', monospace !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: #1e40af !important;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-block;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.2);
+  border: 2px solid #60a5fa;
+}
+
 .grafik-container {
   background: white;
   padding: 35px;

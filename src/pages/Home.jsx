@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Heart,
   Users,
@@ -8,11 +9,44 @@ import {
   UsersRound,
   Smile,
   Clock,
+  Calendar,
+  MapPin,
 } from "lucide-react";
+import { getAllKegiatan } from "../services/kegiatanService";
 import "../styles/pages/Home.css";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [activeCard, setActiveCard] = useState(0);
+  const [kegiatanList, setKegiatanList] = useState([]);
+  const [isLoadingKegiatan, setIsLoadingKegiatan] = useState(true);
+
+  useEffect(() => {
+    const fetchKegiatan = async () => {
+      const { data, error } = await getAllKegiatan();
+      if (data && !error) {
+        // Get only upcoming/active activities, limit to 3
+        const upcomingKegiatan = data
+          .filter((k) => k.status !== "Selesai")
+          .slice(0, 3)
+          .map((k) => ({
+            id: k.id,
+            judul: k.judul,
+            deskripsi: k.deskripsi,
+            tanggalWaktu: k.tanggal_waktu,
+            lokasi: k.lokasi || k.lokasi_posyandu,
+            kategori: k.kategori,
+            status: k.status,
+          }));
+        setKegiatanList(upcomingKegiatan);
+      } else {
+        console.error("Error fetching kegiatan:", error);
+      }
+      setIsLoadingKegiatan(false);
+    };
+
+    fetchKegiatan();
+  }, []);
 
   const features = [
     {
@@ -67,6 +101,37 @@ const Home = () => {
       label: "Siap Melayani",
     },
   ];
+
+  const getCategoryColor = (kategori) => {
+    const colors = {
+      imunisasi: "bg-blue-100 text-blue-700 border-blue-300",
+      edukasi: "bg-green-100 text-green-700 border-green-300",
+      pemeriksaan: "bg-purple-100 text-purple-700 border-purple-300",
+      posyandu: "bg-orange-100 text-orange-700 border-orange-300",
+      penyuluhan: "bg-yellow-100 text-yellow-700 border-yellow-300",
+      konseling: "bg-pink-100 text-pink-700 border-pink-300",
+      pemantauan: "bg-teal-100 text-teal-700 border-teal-300",
+    };
+    return colors[kategori] || "bg-gray-100 text-gray-700 border-gray-300";
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const FloatingShapes = () => (
     <div className="floating-shapes-container">
@@ -186,6 +251,87 @@ const Home = () => {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* KEGIATAN SECTION */}
+      <section className="kegiatan-section">
+        <div className="kegiatan-container">
+          {/* Section Header */}
+          <div className="kegiatan-header">
+            <h2 className="kegiatan-title">Kegiatan Mendatang</h2>
+            <p className="kegiatan-subtitle">
+              Ikuti kegiatan kesehatan terbaru di posyandu kami
+            </p>
+          </div>
+
+          {/* Kegiatan List */}
+          {isLoadingKegiatan ? (
+            <div className="kegiatan-loading">
+              <p>Memuat kegiatan...</p>
+            </div>
+          ) : kegiatanList.length > 0 ? (
+            <div className="kegiatan-grid">
+              {kegiatanList.map((kegiatan, index) => (
+                <div
+                  key={kegiatan.id}
+                  className="kegiatan-card"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  {/* Category Badge */}
+                  <div className={`kegiatan-badge ${getCategoryColor(kegiatan.kategori)}`}>
+                    {kegiatan.kategori
+                      ? kegiatan.kategori.charAt(0).toUpperCase() +
+                        kegiatan.kategori.slice(1)
+                      : "Kegiatan"}
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="kegiatan-card-title">{kegiatan.judul}</h3>
+
+                  {/* Description */}
+                  <p className="kegiatan-card-description">
+                    {kegiatan.deskripsi && kegiatan.deskripsi.length > 120
+                      ? kegiatan.deskripsi.substring(0, 120) + "..."
+                      : kegiatan.deskripsi || ""}
+                  </p>
+
+                  {/* Info */}
+                  <div className="kegiatan-card-info">
+                    <div className="kegiatan-info-item">
+                      <Calendar size={16} className="kegiatan-info-icon" />
+                      <span>{formatDate(kegiatan.tanggalWaktu)}</span>
+                    </div>
+                    <div className="kegiatan-info-item">
+                      <Clock size={16} className="kegiatan-info-icon" />
+                      <span>{formatTime(kegiatan.tanggalWaktu)}</span>
+                    </div>
+                    <div className="kegiatan-info-item">
+                      <MapPin size={16} className="kegiatan-info-icon" />
+                      <span>{kegiatan.lokasi || "Posyandu"}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="kegiatan-empty">
+              <p>Belum ada kegiatan yang dijadwalkan</p>
+            </div>
+          )}
+
+          {/* View All Button */}
+          {kegiatanList.length > 0 && (
+            <div className="kegiatan-footer">
+              <button
+                onClick={() => navigate("/kegiatan")}
+                className="kegiatan-view-all"
+              >
+                Lihat Semua Kegiatan
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

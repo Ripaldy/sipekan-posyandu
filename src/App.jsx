@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import "@fortawesome/fontawesome-free/css/all.css";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   useLocation,
@@ -15,6 +14,7 @@ import "./styles/global/App.css";
 // Impor Komponen Layout Publik
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Impor Halaman Publik
 import Home from "./pages/Home";
@@ -72,7 +72,7 @@ function App() {
   }, []);
 
   return (
-    <Router>
+    <>
       <ScrollToTop />
       <LayoutController>
         <Routes>
@@ -83,8 +83,15 @@ function App() {
           <Route path="/data-anak" element={<DataAnak />} />
           <Route path="/login-admin" element={<LoginAdmin />} />
 
-          {/* == Rute Halaman Admin (Bersarang) == */}
-          <Route path="/admin" element={<AdminLayout />}>
+          {/* == Rute Halaman Admin (Protected) == */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Dashboard />} />
             <Route path="kelola-kegiatan" element={<KelolaKegiatan />} />
             <Route path="form-kegiatan" element={<FormKegiatan />} />
@@ -98,7 +105,7 @@ function App() {
           </Route>
         </Routes>
       </LayoutController>
-    </Router>
+    </>
   );
 }
 

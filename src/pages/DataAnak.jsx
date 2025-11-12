@@ -10,6 +10,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { searchBalita } from "../services/balitaService";
+import { getPemeriksaanByBalitaId } from "../services/pemeriksaanService";
 import "../styles/pages/DataAnak.css";
 
 ChartJS.register(
@@ -22,41 +24,16 @@ ChartJS.register(
   Legend
 );
 
-const mockDatabase = {
-  AZ123: {
-    nama: "Budi Santoso",
-    jenisKelamin: "Laki-laki",
-    tanggalLahir: "2024-01-15",
-    riwayat: [
-      { tanggal: "2024-01-15", berat: 3.2, tinggi: 50 },
-      { tanggal: "2024-02-15", berat: 4.1, tinggi: 54 },
-      { tanggal: "2024-03-16", berat: 5.0, tinggi: 57 },
-      { tanggal: "2024-04-15", berat: 5.8, tinggi: 60 },
-    ],
-  },
-  BC456: {
-    nama: "Citra Lestari",
-    jenisKelamin: "Perempuan",
-    tanggalLahir: "2023-11-20",
-    riwayat: [
-      { tanggal: "2023-11-20", berat: 2.9, tinggi: 48 },
-      { tanggal: "2023-12-21", berat: 3.8, tinggi: 52 },
-      { tanggal: "2024-01-20", berat: 4.5, tinggi: 55 },
-      { tanggal: "2024-02-19", berat: 5.1, tinggi: 58 },
-    ],
-  },
-};
-
 const DataAnak = () => {
   const [kodeUnik, setKodeUnik] = useState("");
   const [dataAnak, setDataAnak] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     if (!kodeUnik) {
-      setError("Kode unik tidak boleh kosong.");
+      setError("Kode unik/nama tidak boleh kosong.");
       return;
     }
 
@@ -64,15 +41,55 @@ const DataAnak = () => {
     setDataAnak(null);
     setError("");
 
-    setTimeout(() => {
-      const result = mockDatabase[kodeUnik.toUpperCase()];
-      if (result) {
-        setDataAnak(result);
-      } else {
-        setError(`Data anak dengan kode unik "${kodeUnik}" tidak ditemukan.`);
+    try {
+      // Search balita by name or NIK
+      const { data: balitaList, error: searchError } = await searchBalita(kodeUnik);
+
+      if (searchError || !balitaList || balitaList.length === 0) {
+        setError(`Data anak dengan kata kunci "${kodeUnik}" tidak ditemukan.`);
+        setIsLoading(false);
+        return;
       }
+
+      // Get first result
+      const balita = balitaList[0];
+
+      // Get pemeriksaan history
+      const { data: pemeriksaanList, error: pemeriksaanError } =
+        await getPemeriksaanByBalitaId(balita.id);
+
+      if (pemeriksaanError) {
+        console.error("Error fetching pemeriksaan:", pemeriksaanError);
+      }
+
+      // Transform data
+      const riwayat = pemeriksaanList
+        ? pemeriksaanList
+            .map((p) => ({
+              tanggal: p.tanggal_pemeriksaan,
+              berat: p.berat_badan,
+              tinggi: p.tinggi_badan,
+            }))
+            .sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal))
+        : [];
+
+      setDataAnak({
+        kodeBalita: balita.kode_balita || '-',
+        nama: balita.nama,
+        jenisKelamin: balita.jenis_kelamin,
+        tanggalLahir: balita.tanggal_lahir,
+        namaOrtu: balita.nama_ortu,
+        alamat: balita.alamat,
+        posyandu: balita.posyandu,
+        statusGizi: balita.status_gizi,
+        riwayat: riwayat,
+      });
+    } catch (err) {
+      console.error("Search error:", err);
+      setError("Terjadi kesalahan saat mencari data.");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const calculateAge = (birthDate) => {
@@ -181,7 +198,7 @@ const DataAnak = () => {
       <div className="hero-data-anak">
         <h1>📊 Cek Data Anak</h1>
         <p>
-          Masukkan kode unik anak untuk melihat data dan grafik pertumbuhannya
+          Masukkan kode unik atau nama anak untuk melihat data dan grafik pertumbuhannya
           secara detail.
         </p>
       </div>
@@ -192,7 +209,7 @@ const DataAnak = () => {
             type="text"
             value={kodeUnik}
             onChange={(e) => setKodeUnik(e.target.value)}
-            placeholder="Masukkan Kode Unik (contoh: AZ123)"
+            placeholder="Masukkan Kode Unik atau Nama Anak (contoh: 20220730-RB-001)"
             disabled={isLoading}
           />
           <button type="submit" disabled={isLoading}>
@@ -208,8 +225,8 @@ const DataAnak = () => {
         {error && <p className="status-error">❌ {error}</p>}
         {!isLoading && !error && !dataAnak && (
           <p className="status-info">
-            📝 Silakan masukkan kode unik dan klik "Cari Data" untuk menampilkan
-            informasi.
+            📝 Silakan masukkan nama anak dan klik "Cari Data" untuk
+            menampilkan informasi
           </p>
         )}
 
@@ -218,6 +235,12 @@ const DataAnak = () => {
             <h2>✅ Hasil Pencarian</h2>
             <table className="data-table">
               <tbody>
+                <tr className="kode-row">
+                  <td>🔑 Kode Balita</td>
+                  <td>
+                    <strong className="kode-highlight">{dataAnak.kodeBalita}</strong>
+                  </td>
+                </tr>
                 <tr>
                   <td>👤 Nama</td>
                   <td>
@@ -244,27 +267,49 @@ const DataAnak = () => {
                   <td>⏰ Usia</td>
                   <td>{calculateAge(dataAnak.tanggalLahir)} tahun</td>
                 </tr>
+                {dataAnak.riwayat && dataAnak.riwayat.length > 0 && (
+                  <>
+                    <tr>
+                      <td>⚖️ Berat Badan Terakhir</td>
+                      <td>
+                        <strong>
+                          {dataAnak.riwayat.slice(-1)[0].berat} kg
+                        </strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>📏 Tinggi Badan Terakhir</td>
+                      <td>
+                        <strong>
+                          {dataAnak.riwayat.slice(-1)[0].tinggi} cm
+                        </strong>
+                      </td>
+                    </tr>
+                  </>
+                )}
                 <tr>
-                  <td>⚖️ Berat Badan Terakhir</td>
+                  <td>📊 Status Gizi</td>
                   <td>
-                    <strong>{dataAnak.riwayat.slice(-1)[0].berat} kg</strong>
-                  </td>
-                </tr>
-                <tr>
-                  <td>📏 Tinggi Badan Terakhir</td>
-                  <td>
-                    <strong>{dataAnak.riwayat.slice(-1)[0].tinggi} cm</strong>
+                    <strong>{dataAnak.statusGizi || "Normal"}</strong>
                   </td>
                 </tr>
               </tbody>
             </table>
 
-            <div className="grafik-container">
-              <h3>📈 Grafik Pertumbuhan</h3>
-              <div className="chart-wrapper">
-                <Line options={chartOptions} data={chartData} />
+            {dataAnak.riwayat && dataAnak.riwayat.length > 0 ? (
+              <div className="grafik-container">
+                <h3>📈 Grafik Pertumbuhan</h3>
+                <div className="chart-wrapper">
+                  <Line options={chartOptions} data={chartData} />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="grafik-container">
+                <p className="status-info">
+                  📝 Belum ada data pemeriksaan untuk ditampilkan dalam grafik.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>

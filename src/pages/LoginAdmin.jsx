@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import "../styles/pages/LoginAdmin.css";
 import logo from "../assets/logo.png";
 import { ArrowLeft, Lock, User, CheckCircle, AlertCircle } from "lucide-react";
 
 const LoginAdmin = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [toastMessage, setToastMessage] = useState({ message: "", type: "" });
@@ -14,15 +15,29 @@ const LoginAdmin = () => {
   const [focusedField, setFocusedField] = useState(null);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setToastMessage({ message: "", type: "" });
     setLoginStatus("initial");
     setIsLoading(true);
 
-    setTimeout(() => {
-      if (username === "admin" && password === "password123") {
+    try {
+      const { error } = await login(email, password);
+
+      if (error) {
+        setToastMessage({
+          message: error.message || "Email atau password salah.",
+          type: "error",
+        });
+        setLoginStatus("error");
+
+        setTimeout(() => {
+          setToastMessage({ message: "", type: "" });
+          setLoginStatus("initial");
+        }, 3000);
+      } else {
         setToastMessage({
           message: "Login Berhasil! Mengalihkan...",
           type: "success",
@@ -31,19 +46,23 @@ const LoginAdmin = () => {
 
         setTimeout(() => {
           navigate("/admin");
-        }, 2000);
-      } else {
-        setToastMessage({
-          message: "Username atau password salah.",
-          type: "error",
-        });
-
-        setTimeout(() => {
-          setToastMessage({ message: "", type: "" });
-        }, 3000);
+        }, 1500);
       }
+    } catch (err) {
+      console.error("Login exception:", err);
+      setToastMessage({
+        message: "Terjadi kesalahan. Silakan coba lagi.",
+        type: "error",
+      });
+      setLoginStatus("error");
+
+      setTimeout(() => {
+        setToastMessage({ message: "", type: "" });
+        setLoginStatus("initial");
+      }, 3000);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleBack = () => {
@@ -92,23 +111,23 @@ const LoginAdmin = () => {
 
           {/* Form section */}
           <form onSubmit={handleLogin} className="login-form">
-            {/* Username field */}
+            {/* Email field */}
             <div className="form-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="email">Email</label>
               <div
                 className={`input-wrapper ${
-                  focusedField === "username" ? "focused" : ""
+                  focusedField === "email" ? "focused" : ""
                 }`}
               >
                 <User className="input-icon" size={18} />
                 <input
-                  type="text"
-                  id="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  onFocus={() => setFocusedField("username")}
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setFocusedField("email")}
                   onBlur={() => setFocusedField(null)}
-                  placeholder="Masukkan username"
+                  placeholder="Masukkan email"
                   required
                 />
               </div>
@@ -159,7 +178,7 @@ const LoginAdmin = () => {
           {/* Footer info */}
           <div className="login-footer">
             <p>
-              Demo: <span>admin</span> / <span>password123</span>
+              Demo: <span>admin@sipekan.com</span> / <span>Admin123!</span>
             </p>
           </div>
         </div>

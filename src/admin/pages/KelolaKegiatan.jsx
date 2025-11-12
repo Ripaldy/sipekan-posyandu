@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
@@ -10,57 +10,43 @@ import {
   MapPin,
   Users,
 } from "lucide-react";
+import { getAllKegiatan, deleteKegiatan } from "../../services/kegiatanService";
 import "../../styles/admin/KelolaKegiatan.css";
-
-const mockKegiatanData = [
-  {
-    id: 1,
-    judul: "Imunisasi Anak Batch 1",
-    posyandu: "Posyandu Anggrek",
-    jadwal: "2025-07-25T15:00",
-    deskripsi:
-      "Memberikan imunisasi anti stunting dengan vaksin lengkap untuk mencegah penyakit menular dan memastikan pertumbuhan optimal anak-anak di wilayah ini.",
-    kategori: "imunisasi",
-    pemateri: "Dr. Siti Nurhaliza, Spesialis Anak",
-    lokasi:
-      "Jl. Merdeka No. 45, Kecamatan A, Kelurahan Indah Jaya, Kabupaten Tangerang",
-    target: "50 anak",
-    status: "Selesai",
-  },
-  {
-    id: 2,
-    judul: "Imunisasi Anak Batch 2",
-    posyandu: "Balai Desa",
-    jadwal: "2025-08-14T08:00",
-    deskripsi:
-      "Imunisasi Batch 2 di Balai Desa dengan fokus pada vaksin polio, campak, dan DPT untuk memastikan semua anak terlindungi dari penyakit berbahaya.",
-    kategori: "imunisasi",
-    pemateri: "Dr. Bambang Sutrisno, Dokter Desa",
-    lokasi: "Balai Desa Kecamatan A, Jalan Utama, Tangerang Selatan",
-    target: "60 anak",
-    status: "Terjadwal",
-  },
-  {
-    id: 3,
-    judul: "Edukasi Kesehatan Ibu",
-    posyandu: "Posyandu Melati",
-    jadwal: "2025-09-01T10:00",
-    deskripsi:
-      "Edukasi lengkap tentang pentingnya gizi seimbang untuk ibu hamil dan menyusui, termasuk panduan pemilihan makanan bergizi, cara menyiapkan menu sehat keluarga, dan tips kesehatan selama kehamilan dan masa menyusui.",
-    kategori: "edukasi",
-    pemateri: "Dr. Mira Wijaya, S.Pd.M.Kes, Ahli Gizi Masyarakat",
-    lokasi:
-      "Jl. Ahmad Yani No. 20, Kompleks Kesehatan Masyarakat, Gedung A lantai 2",
-    target: "80 peserta (Ibu hamil, ibu menyusui, dan keluarga)",
-    status: "Terjadwal",
-  },
-];
 
 const KelolaKegiatan = () => {
   const navigate = useNavigate();
-  const [kegiatanList, setKegiatanList] = useState(mockKegiatanData);
+  const [kegiatanList, setKegiatanList] = useState([]);
   const [filter, setFilter] = useState("");
   const [expandedId, setExpandedId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await getAllKegiatan();
+      if (data && !error) {
+        // Transform Supabase data to match component structure
+        const transformedData = data.map((kegiatan) => ({
+          id: kegiatan.id,
+          judul: kegiatan.judul,
+          posyandu: kegiatan.lokasi_posyandu || "Posyandu",
+          jadwal: kegiatan.tanggal_waktu,
+          deskripsi: kegiatan.deskripsi,
+          kategori: kegiatan.kategori,
+          pemateri: kegiatan.penanggung_jawab,
+          lokasi: kegiatan.lokasi || kegiatan.lokasi_posyandu,
+          target: kegiatan.target_peserta || "Tidak disebutkan",
+          status: kegiatan.status || "Terjadwal",
+        }));
+        setKegiatanList(transformedData);
+      } else {
+        console.error("Error fetching kegiatan:", error);
+        setKegiatanList([]);
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   const filteredKegiatan = useMemo(() => {
     if (!filter) return kegiatanList;
@@ -76,26 +62,20 @@ const KelolaKegiatan = () => {
   };
 
   const handleEditKegiatan = (kegiatan) => {
-    navigate("/admin/form-kegiatan", { state: { editData: kegiatan } });
+    navigate(`/admin/form-kegiatan/${kegiatan.id}`);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus kegiatan ini?")) {
-      setKegiatanList(kegiatanList.filter((k) => k.id !== id));
+      const { error } = await deleteKegiatan(id);
+      if (!error) {
+        setKegiatanList(kegiatanList.filter((k) => k.id !== id));
+        alert("Kegiatan berhasil dihapus!");
+      } else {
+        console.error("Error deleting kegiatan:", error);
+        alert("Gagal menghapus kegiatan!");
+      }
     }
-  };
-
-  const handleToggleStatus = (id) => {
-    setKegiatanList(
-      kegiatanList.map((k) =>
-        k.id === id
-          ? {
-              ...k,
-              status: k.status === "Selesai" ? "Terjadwal" : "Selesai",
-            }
-          : k
-      )
-    );
   };
 
   const toggleExpanded = (id) => {
@@ -120,6 +100,14 @@ const KelolaKegiatan = () => {
       minute: "2-digit",
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="kelola-kegiatan-container">
+        <p>Memuat data kegiatan...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="kelola-kegiatan-container">
@@ -229,14 +217,6 @@ const KelolaKegiatan = () => {
 
                   {/* Card Actions */}
                   <div className="kelola-card-actions">
-                    <button
-                      onClick={() => handleToggleStatus(kegiatan.id)}
-                      className="kelola-btn kelola-btn-status"
-                    >
-                      {kegiatan.status === "Selesai"
-                        ? "Tandai Belum Selesai"
-                        : "Tandai Selesai"}
-                    </button>
                     <button
                       onClick={() => handleEditKegiatan(kegiatan)}
                       className="kelola-btn kelola-btn-edit"

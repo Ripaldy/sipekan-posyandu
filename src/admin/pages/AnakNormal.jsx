@@ -1,101 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, CheckCircle, Filter, Users } from "lucide-react";
+import { getBalitaByStatus } from "../../services/balitaService";
 import "../../styles/admin/AnakNormal.css";
+
+const hitungUmur = (tanggalLahir) => {
+  if (!tanggalLahir) return "0 bulan";
+  const tglLahir = new Date(tanggalLahir);
+  const hariIni = new Date();
+  let tahun = hariIni.getFullYear() - tglLahir.getFullYear();
+  let bulan = hariIni.getMonth() - tglLahir.getMonth();
+
+  if (bulan < 0 || (bulan === 0 && hariIni.getDate() < tglLahir.getDate())) {
+    tahun--;
+    bulan += 12;
+  }
+
+  const totalBulan = tahun * 12 + bulan;
+  if (totalBulan < 12) {
+    return `${totalBulan} bulan`;
+  } else {
+    return `${tahun} tahun ${bulan} bulan`;
+  }
+};
 
 const AnakNormal = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterJenisKelamin, setFilterJenisKelamin] = useState("semua");
+  const [anakNormalData, setAnakNormalData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const anakNormalData = [
-    {
-      id: 1,
-      nama: "Budi Santoso",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-06-15",
-      umur: "24 bulan",
-      bb: "11.5 kg",
-      tb: "85 cm",
-      lila: "17.2 cm",
-      status: "Normal",
-    },
-    {
-      id: 2,
-      nama: "Siti Nurhaliza",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-08-20",
-      umur: "18 bulan",
-      bb: "10.8 kg",
-      tb: "82 cm",
-      lila: "16.8 cm",
-      status: "Normal",
-    },
-    {
-      id: 3,
-      nama: "Dewi Lestari",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-02-05",
-      umur: "30 bulan",
-      bb: "13.2 kg",
-      tb: "90 cm",
-      lila: "18.5 cm",
-      status: "Normal",
-    },
-    {
-      id: 4,
-      nama: "Maya Kusuma",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-07-18",
-      umur: "22 bulan",
-      bb: "11.0 kg",
-      tb: "83 cm",
-      lila: "17.0 cm",
-      status: "Normal",
-    },
-    {
-      id: 5,
-      nama: "Toni Wijaya",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-03-25",
-      umur: "28 bulan",
-      bb: "12.5 kg",
-      tb: "88 cm",
-      lila: "18.0 cm",
-      status: "Normal",
-    },
-    {
-      id: 6,
-      nama: "Lisa Maulana",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-09-08",
-      umur: "20 bulan",
-      bb: "10.5 kg",
-      tb: "81 cm",
-      lila: "16.5 cm",
-      status: "Normal",
-    },
-    {
-      id: 7,
-      nama: "Andi Prasetyo",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-05-30",
-      umur: "26 bulan",
-      bb: "12.2 kg",
-      tb: "87 cm",
-      lila: "17.8 cm",
-      status: "Normal",
-    },
-    {
-      id: 8,
-      nama: "Nina Handayani",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-10-02",
-      umur: "19 bulan",
-      bb: "10.3 kg",
-      tb: "80 cm",
-      lila: "16.3 cm",
-      status: "Normal",
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await getBalitaByStatus("normal");
+      if (data && !error) {
+        const transformedData = data.map((balita) => ({
+          id: balita.id,
+          nama: balita.nama,
+          jenisKelamin: balita.jenis_kelamin,
+          tanggalLahir: balita.tanggal_lahir,
+          umur: hitungUmur(balita.tanggal_lahir),
+          namaOrtu: balita.nama_ortu,
+          alamat: balita.alamat,
+          posyandu: balita.posyandu,
+          statusGizi: balita.status_gizi,
+        }));
+        setAnakNormalData(transformedData);
+      } else {
+        console.error("Error fetching normal balita:", error);
+        setAnakNormalData([]);
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   const filteredData = anakNormalData.filter((anak) => {
     const matchSearch = anak.nama
@@ -113,6 +71,14 @@ const AnakNormal = () => {
   const totalPerempuan = anakNormalData.filter(
     (a) => a.jenisKelamin === "Perempuan"
   ).length;
+
+  if (isLoading) {
+    return (
+      <div className="page-container">
+        <p>Memuat data anak dengan pertumbuhan normal...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
@@ -198,9 +164,9 @@ const AnakNormal = () => {
               <th>Jenis Kelamin</th>
               <th>Tanggal Lahir</th>
               <th>Umur</th>
-              <th>BB</th>
-              <th>TB</th>
-              <th>LILA</th>
+              <th>Nama Ortu</th>
+              <th>Alamat</th>
+              <th>Posyandu</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -210,14 +176,20 @@ const AnakNormal = () => {
                 <tr key={anak.id}>
                   <td>{anak.nama}</td>
                   <td>{anak.jenisKelamin}</td>
-                  <td>{anak.tanggalLahir}</td>
+                  <td>
+                    {new Date(anak.tanggalLahir).toLocaleDateString("id-ID", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
+                  </td>
                   <td>{anak.umur}</td>
-                  <td>{anak.bb}</td>
-                  <td>{anak.tb}</td>
-                  <td>{anak.lila}</td>
+                  <td>{anak.namaOrtu}</td>
+                  <td>{anak.alamat || "-"}</td>
+                  <td>{anak.posyandu || "-"}</td>
                   <td>
                     <span className="status-badge status-normal">
-                      {anak.status}
+                      {anak.statusGizi || "Normal"}
                     </span>
                   </td>
                 </tr>

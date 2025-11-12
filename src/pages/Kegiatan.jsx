@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Calendar,
@@ -9,70 +9,43 @@ import {
   Syringe,
   ChevronRight,
 } from "lucide-react";
+import { getAllKegiatan } from "../services/kegiatanService";
 import "../styles/pages/Kegiatan.css";
-
-const defaultKegiatan = [
-  {
-    id: "k1",
-    judul: "Imunisasi Anak Batch 1",
-    deskripsi:
-      "Memberikan imunisasi anti stunting dengan vaksin lengkap untuk mencegah penyakit menular dan memastikan pertumbuhan optimal anak-anak di wilayah ini.",
-    jadwal: "2025-07-25T15:00",
-    posyandu: "Posyandu Anggrek",
-    kategori: "imunisasi",
-    pemateri: "Dr. Siti Nurhaliza, Spesialis Anak",
-    lokasi:
-      "Jl. Merdeka No. 45, Kecamatan A, Kelurahan Indah Jaya, Kabupaten Tangerang",
-    target: "50 anak",
-    status: "Terjadwal",
-  },
-  {
-    id: "k2",
-    judul: "Imunisasi Anak Batch 2 (Agustus)",
-    deskripsi:
-      "Imunisasi Batch 2 di Balai Desa dengan fokus pada vaksin polio, campak, dan DPT untuk memastikan semua anak terlindungi dari penyakit berbahaya.",
-    jadwal: "2025-08-14T08:00",
-    posyandu: "Balai Desa",
-    kategori: "imunisasi",
-    pemateri: "Dr. Bambang Sutrisno, Dokter Desa",
-    lokasi: "Balai Desa Kecamatan A, Jalan Utama, Tangerang Selatan",
-    target: "60 anak",
-    status: "Terjadwal",
-  },
-  {
-    id: "k3",
-    judul: "Edukasi Kesehatan Ibu dan Anak",
-    deskripsi:
-      "Edukasi lengkap tentang pentingnya gizi seimbang untuk ibu hamil dan menyusui, termasuk panduan pemilihan makanan bergizi, cara menyiapkan menu sehat keluarga, dan tips kesehatan.",
-    jadwal: "2025-09-01T10:00",
-    posyandu: "Posyandu Melati",
-    kategori: "edukasi",
-    pemateri: "Dr. Mira Wijaya, S.Pd.M.Kes, Ahli Gizi Masyarakat",
-    lokasi:
-      "Jl. Ahmad Yani No. 20, Kompleks Kesehatan Masyarakat, Gedung A lantai 2",
-    target: "80 peserta (Ibu hamil, ibu menyusui, dan keluarga)",
-    status: "Terjadwal",
-  },
-  {
-    id: "k4",
-    judul: "Pemeriksaan Kesehatan Rutin",
-    deskripsi:
-      "Pemeriksaan kesehatan gratis untuk anak balita di Puskesmas dengan fokus pada deteksi dini stunting dan masalah kesehatan lainnya.",
-    jadwal: "2025-10-05T09:00",
-    posyandu: "Puskesmas Kecamatan",
-    kategori: "pemeriksaan",
-    pemateri: "Tim Puskesmas Kecamatan A",
-    lokasi: "Puskesmas Kecamatan A, Jl. Kesehatan No. 10, Kecamatan A",
-    target: "100 anak",
-    status: "Terjadwal",
-  },
-];
 
 const Kegiatan = () => {
   const [tanggalFilter, setTanggalFilter] = useState("");
   const [cariFilter, setCariFilter] = useState("");
   const [kategoriFilter, setKategoriFilter] = useState("");
   const [expandedCard, setExpandedCard] = useState(null);
+  const [kegiatanList, setKegiatanList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await getAllKegiatan();
+      if (data && !error) {
+        const transformedData = data.map((k) => ({
+          id: k.id,
+          judul: k.judul,
+          deskripsi: k.deskripsi,
+          jadwal: k.tanggal_waktu,
+          posyandu: k.lokasi_posyandu || "Posyandu",
+          kategori: k.kategori,
+          pemateri: k.penanggung_jawab,
+          lokasi: k.lokasi || k.lokasi_posyandu,
+          target: k.target_peserta || "Tidak disebutkan",
+          status: k.status || "Terjadwal",
+        }));
+        setKegiatanList(transformedData);
+      } else {
+        console.error("Error fetching kegiatan:", error);
+        setKegiatanList([]);
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   const handleResetFilter = () => {
     setTanggalFilter("");
@@ -81,7 +54,7 @@ const Kegiatan = () => {
   };
 
   const filteredKegiatan = useMemo(() => {
-    return defaultKegiatan.filter((kegiatan) => {
+    return kegiatanList.filter((kegiatan) => {
       const filterDate = tanggalFilter ? new Date(tanggalFilter) : null;
       const kegiatanDate = new Date(kegiatan.jadwal);
 
@@ -105,7 +78,7 @@ const Kegiatan = () => {
 
       return tanggalMatch && cariMatch && kategoriMatch;
     });
-  }, [tanggalFilter, cariFilter, kategoriFilter]);
+  }, [kegiatanList, tanggalFilter, cariFilter, kategoriFilter]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -125,6 +98,10 @@ const Kegiatan = () => {
       imunisasi: <Syringe />,
       edukasi: <BookOpen />,
       pemeriksaan: <Stethoscope />,
+      posyandu: <Users />,
+      penyuluhan: <BookOpen />,
+      konseling: <Users />,
+      pemantauan: <Stethoscope />,
     };
     return icons[category] || <Users />;
   };
@@ -134,9 +111,28 @@ const Kegiatan = () => {
       imunisasi: "Imunisasi",
       edukasi: "Edukasi",
       pemeriksaan: "Pemeriksaan",
+      posyandu: "Posyandu",
+      penyuluhan: "Penyuluhan",
+      konseling: "Konseling",
+      pemantauan: "Pemantauan",
     };
     return labels[category] || category;
   };
+
+  if (isLoading) {
+    return (
+      <div className="kegiatan-container">
+        <div className="kegiatan-wrapper">
+          <div className="kegiatan-header">
+            <h1 className="kegiatan-title">Memuat Data...</h1>
+            <p className="kegiatan-subtitle">
+              Mengambil data kegiatan dari server
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="kegiatan-container">
@@ -184,6 +180,10 @@ const Kegiatan = () => {
                 <option value="imunisasi">Imunisasi</option>
                 <option value="edukasi">Edukasi</option>
                 <option value="pemeriksaan">Pemeriksaan</option>
+                <option value="posyandu">Posyandu</option>
+                <option value="penyuluhan">Penyuluhan</option>
+                <option value="konseling">Konseling</option>
+                <option value="pemantauan">Pemantauan</option>
               </select>
             </div>
 
@@ -200,7 +200,7 @@ const Kegiatan = () => {
 
           <div className="kegiatan-results-info">
             Menampilkan <strong>{filteredKegiatan.length}</strong> dari{" "}
-            <strong>{defaultKegiatan.length}</strong> kegiatan
+            <strong>{kegiatanList.length}</strong> kegiatan
           </div>
         </div>
 

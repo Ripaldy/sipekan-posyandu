@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import "../../styles/admin/AdminLayout.css";
 import logo from "../../assets/logo.png";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    alert("Anda telah logout.");
-    navigate("/");
+  const handleLogout = async () => {
+    const { error } = await logout();
+    if (!error) {
+      navigate("/");
+    } else {
+      alert("Gagal logout. Silakan coba lagi.");
+    }
   };
 
   const toggleMenu = () => {
@@ -37,6 +43,11 @@ const AdminLayout = () => {
         </nav>
 
         <div className="header-controls-right">
+          {user && (
+            <div className="user-info-desktop">
+              <span className="user-email">{user.email}</span>
+            </div>
+          )}
           <button
             className="hamburger-btn"
             onClick={toggleMenu}

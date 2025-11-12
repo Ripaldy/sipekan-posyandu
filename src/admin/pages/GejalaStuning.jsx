@@ -1,101 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, AlertCircle, Filter } from "lucide-react";
+import { getBalitaByStatus } from "../../services/balitaService";
 import "../../styles/admin/GejalaStuning.css";
+
+const hitungUmur = (tanggalLahir) => {
+  if (!tanggalLahir) return "0 bulan";
+  const tglLahir = new Date(tanggalLahir);
+  const hariIni = new Date();
+  let tahun = hariIni.getFullYear() - tglLahir.getFullYear();
+  let bulan = hariIni.getMonth() - tglLahir.getMonth();
+
+  if (bulan < 0 || (bulan === 0 && hariIni.getDate() < tglLahir.getDate())) {
+    tahun--;
+    bulan += 12;
+  }
+
+  const totalBulan = tahun * 12 + bulan;
+  if (totalBulan < 12) {
+    return `${totalBulan} bulan`;
+  } else {
+    return `${tahun} tahun ${bulan} bulan`;
+  }
+};
 
 const GejalaStuning = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRisiko, setFilterRisiko] = useState("semua");
+  const [stuntingData, setStuntingData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const stuntingData = [
-    {
-      id: 1,
-      nama: "Ahmad Rahman",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-10-10",
-      umur: "12 bulan",
-      bb: "8.2 kg",
-      tb: "72 cm",
-      lila: "14.5 cm",
-      status: "Risiko Tinggi",
-    },
-    {
-      id: 2,
-      nama: "Rudi Hartono",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-04-12",
-      umur: "15 bulan",
-      bb: "9.5 kg",
-      tb: "75 cm",
-      lila: "15.2 cm",
-      status: "Risiko Sedang",
-    },
-    {
-      id: 3,
-      nama: "Rina Suwandi",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-08-05",
-      umur: "18 bulan",
-      bb: "10.1 kg",
-      tb: "78 cm",
-      lila: "15.8 cm",
-      status: "Risiko Tinggi",
-    },
-    {
-      id: 4,
-      nama: "Boni Kurniawan",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-05-22",
-      umur: "16 bulan",
-      bb: "9.8 kg",
-      tb: "76 cm",
-      lila: "15.5 cm",
-      status: "Risiko Sedang",
-    },
-    {
-      id: 5,
-      nama: "Tina Wijaya",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-06-30",
-      umur: "14 bulan",
-      bb: "8.9 kg",
-      tb: "73 cm",
-      lila: "14.8 cm",
-      status: "Risiko Tinggi",
-    },
-    {
-      id: 6,
-      nama: "Bambang Sutrisno",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-03-15",
-      umur: "20 bulan",
-      bb: "10.5 kg",
-      tb: "79 cm",
-      lila: "16.2 cm",
-      status: "Risiko Sedang",
-    },
-    {
-      id: 7,
-      nama: "Siska Mardiana",
-      jenisKelamin: "Perempuan",
-      tanggalLahir: "2023-07-12",
-      umur: "17 bulan",
-      bb: "9.7 kg",
-      tb: "77 cm",
-      lila: "15.9 cm",
-      status: "Risiko Tinggi",
-    },
-    {
-      id: 8,
-      nama: "Hendra Gunawan",
-      jenisKelamin: "Laki-laki",
-      tanggalLahir: "2023-02-28",
-      umur: "19 bulan",
-      bb: "10.2 kg",
-      tb: "78.5 cm",
-      lila: "16.0 cm",
-      status: "Risiko Sedang",
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      // Fetch balita with stunting status
+      const { data, error } = await getBalitaByStatus("stunting");
+      if (data && !error) {
+        const transformedData = data.map((balita) => ({
+          id: balita.id,
+          nama: balita.nama,
+          jenisKelamin: balita.jenis_kelamin,
+          tanggalLahir: balita.tanggal_lahir,
+          umur: hitungUmur(balita.tanggal_lahir),
+          namaOrtu: balita.nama_ortu,
+          alamat: balita.alamat,
+          posyandu: balita.posyandu,
+          statusGizi: balita.status_gizi,
+          // For now, we'll mark all as "Risiko Tinggi" since they have stunting status
+          // This can be refined based on additional medical data
+          status: "Risiko Tinggi",
+        }));
+        setStuntingData(transformedData);
+      } else {
+        console.error("Error fetching stunting data:", error);
+        setStuntingData([]);
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   const filteredData = stuntingData.filter((anak) => {
     const matchSearch = anak.nama
@@ -112,6 +74,14 @@ const GejalaStuning = () => {
   const risikoSedang = stuntingData.filter(
     (a) => a.status === "Risiko Sedang"
   ).length;
+
+  if (isLoading) {
+    return (
+      <div className="page-container">
+        <p>Memuat data gejala stunting...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
@@ -185,9 +155,9 @@ const GejalaStuning = () => {
               <th>Jenis Kelamin</th>
               <th>Tanggal Lahir</th>
               <th>Umur</th>
-              <th>BB</th>
-              <th>TB</th>
-              <th>LILA</th>
+              <th>Nama Ortu</th>
+              <th>Alamat</th>
+              <th>Posyandu</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -197,11 +167,17 @@ const GejalaStuning = () => {
                 <tr key={anak.id}>
                   <td>{anak.nama}</td>
                   <td>{anak.jenisKelamin}</td>
-                  <td>{anak.tanggalLahir}</td>
+                  <td>
+                    {new Date(anak.tanggalLahir).toLocaleDateString("id-ID", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
+                  </td>
                   <td>{anak.umur}</td>
-                  <td>{anak.bb}</td>
-                  <td>{anak.tb}</td>
-                  <td>{anak.lila}</td>
+                  <td>{anak.namaOrtu}</td>
+                  <td>{anak.alamat || "-"}</td>
+                  <td>{anak.posyandu || "-"}</td>
                   <td>
                     <span
                       className={`status-badge status-${anak.status
