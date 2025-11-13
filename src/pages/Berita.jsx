@@ -26,7 +26,7 @@ const newsData = [
     content:
       "Memahami milestone perkembangan anak sangat penting. Simak tahapan tumbuh kembang...",
     linkUrl:
-      "https://www.idai.or.id/artikel/seputar-kesehatan-anak/pemantauan-perkembangan-anak-panduan-orang-tua",
+      "https://www.pintasan.id/lifestyle/15814/perkembangan-anak-panduan-lengkap-usia-0-5-tahun",
   },
   {
     id: 3,
@@ -40,7 +40,7 @@ const newsData = [
     content:
       "Menu makanan bergizi adalah kunci mencegah stunting. Pelajari komposisi gizi seimbang...",
     linkUrl:
-      "https://health.kompas.com/read/2022/03/21/130000168/panduan-gizi-seimbang-untuk-anak-balita",
+      "https://hellosehat.com/parenting/anak-1-sampai-5-tahun/gizi-balita/gizi-pada-balita/",
   },
   {
     id: 4,
@@ -54,7 +54,7 @@ const newsData = [
     content:
       "Sistem imun yang kuat membantu anak tumbuh sehat. Ikuti 5 tips mudah untuk meningkatkan...",
     linkUrl:
-      "https://www.halodoc.com/artikel/5-cara-meningkatkan-sistem-imun-anak-agar-tidak-mudah-sakit",
+      "https://mindset.viva.co.id/tren/6303-5-langkah-ampuh-meningkatkan-imunitas-anak",
   },
   {
     id: 5,
@@ -67,7 +67,7 @@ const newsData = [
     content:
       "Periode 1000 hari pertama kehidupan sangat krusial. Intervensi gizi yang tepat dapat...",
     linkUrl:
-      "https://www.who.int/indonesia/news/campaign/1000-hari-pertama-kehidupan",
+      "https://kesmas-id.com/1000-hari-pertama-kehidupan-anak-kunci-dalam-mencegah-stunting/",
   },
   {
     id: 6,
@@ -81,7 +81,7 @@ const newsData = [
     content:
       "Stimulasi sejak dini sangat penting untuk perkembangan otak anak. Ketahui aktivitas...",
     linkUrl:
-      "https://www.unicef.org/indonesia/id/story/permainan-sederhana-yang-dapat-meningkatkan-perkembangan-otak-anak-anda",
+      "https://www.identif.id/teknik-stimulasi-kognitif-dalam-pembelajaran-anak-usia-dini/",
   },
 ];
 
