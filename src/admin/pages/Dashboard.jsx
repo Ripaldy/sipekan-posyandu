@@ -81,14 +81,17 @@ const Dashboard = () => {
   // Data untuk Pie Chart - Status Gizi
   const pieData = [
     { name: 'Normal', value: stats.normal, color: '#4caf50' },
-    { name: 'Stunting', value: stats.stunting, color: '#f44336' },
+    { name: 'Resiko Stunting', value: stats.stunting, color: '#f44336' },
   ];
 
   // Data untuk Line Chart - Tren Jumlah Anak Terdaftar (Real Data)
-  const trendData = registrationTrend.months.map((month, index) => ({
-    month,
-    jumlah: registrationTrend.cumulativeCount[index] || 0,
-  }));
+  // Filter hanya bulan dengan data (cumulative > 0)
+  const trendData = registrationTrend.months
+    .map((month, index) => ({
+      month,
+      jumlah: registrationTrend.cumulativeCount[index] || 0,
+    }))
+    .filter(item => item.jumlah > 0 || registrationTrend.cumulativeCount.some(count => count > 0));
 
   // Data untuk chart rata-rata pertumbuhan (Real Data)
   const growthData = averageGrowth.months.map((month, index) => ({
@@ -204,7 +207,7 @@ const Dashboard = () => {
             </div>
             <div className='legend-item'>
               <span className='legend-dot' style={{ backgroundColor: '#f44336' }}></span>
-              <span>Stunting: {stats.stunting} anak</span>
+              <span>Resiko Stunting: {stats.stunting} anak</span>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Search, AlertCircle, Filter } from "lucide-react";
-import { getBalitaByStatus } from "../../services/balitaService";
+import { getBalitaByStatus, updateBalita } from "../../services/balitaService";
 import "../../styles/admin/GejalaStuning.css";
 
 const hitungUmur = (tanggalLahir) => {
@@ -31,8 +31,8 @@ const GejalaStuning = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch balita with stunting status
-      const { data, error } = await getBalitaByStatus("stunting");
+      // Fetch balita with "Resiko Stunting" status
+      const { data, error } = await getBalitaByStatus("Resiko Stunting");
       if (data && !error) {
         const transformedData = data.map((balita) => ({
           id: balita.id,
@@ -40,13 +40,12 @@ const GejalaStuning = () => {
           jenisKelamin: balita.jenis_kelamin,
           tanggalLahir: balita.tanggal_lahir,
           umur: hitungUmur(balita.tanggal_lahir),
-          namaOrtu: balita.nama_ortu,
-          alamat: balita.alamat,
-          posyandu: balita.posyandu,
+          namaOrtu: balita.nama_ibu || "-",
+          alamat: balita.alamat || balita.desa_kelurahan || "-",
+          posyandu: balita.posyandu || "-",
           statusGizi: balita.status_gizi,
-          // For now, we'll mark all as "Risiko Tinggi" since they have stunting status
-          // This can be refined based on additional medical data
-          status: "Risiko Tinggi",
+          // Use risiko_stunting field from database, default to "Risiko Tinggi"
+          status: balita.risiko_stunting || "Risiko Tinggi",
         }));
         setStuntingData(transformedData);
       } else {
@@ -58,6 +57,37 @@ const GejalaStuning = () => {
 
     fetchData();
   }, []);
+
+  const handleToggleRisiko = async (id) => {
+    // Update local state immediately for responsive UI
+    const updatedData = stuntingData.map(anak =>
+      anak.id === id
+        ? {
+            ...anak,
+            status: anak.status === "Risiko Tinggi" ? "Risiko Sedang" : "Risiko Tinggi"
+          }
+        : anak
+    );
+    setStuntingData(updatedData);
+
+    // Find the updated item to save to database
+    const updatedAnak = updatedData.find(anak => anak.id === id);
+    if (updatedAnak) {
+      // Save to database
+      const { error } = await updateBalita(id, { 
+        risiko_stunting: updatedAnak.status 
+      });
+      
+      if (error) {
+        console.error('Failed to update risiko status:', error);
+        // Revert on error
+        setStuntingData(stuntingData);
+        alert('Gagal mengubah status risiko. Silakan coba lagi.');
+      } else {
+        console.log('✅ Status risiko updated:', updatedAnak.status);
+      }
+    }
+  };
 
   const filteredData = stuntingData.filter((anak) => {
     const matchSearch = anak.nama
@@ -182,7 +212,10 @@ const GejalaStuning = () => {
                     <span
                       className={`status-badge status-${anak.status
                         .toLowerCase()
-                        .replace(" ", "-")}`}
+                        .replace(" ", "-")} status-clickable`}
+                      onClick={() => handleToggleRisiko(anak.id)}
+                      style={{ cursor: 'pointer' }}
+                      title="Klik untuk mengubah status risiko"
                     >
                       {anak.status}
                     </span>

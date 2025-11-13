@@ -45,7 +45,7 @@ const AdminLayout = () => {
         <div className="header-controls-right">
           {user && (
             <div className="user-info-desktop">
-              <span className="user-email">{user.email}</span>
+              <span className="user-email"></span>
             </div>
           )}
           <button

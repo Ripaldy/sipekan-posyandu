@@ -169,11 +169,6 @@ const Home = () => {
               kami memberikan solusi kesehatan untuk semua.
             </p>
 
-            {/* CTA Button */}
-            <button className="hero-cta-button">
-              Jelajahi Layanan Kami
-              <ArrowRight size={20} />
-            </button>
           </div>
         </div>
       </section>

@@ -86,13 +86,8 @@ const KelolaDataBalita = () => {
   const handleToggleStatus = async (id, currentStatus) => {
     // Toggle between "Normal" and "Resiko Stunting"
     const newStatus = currentStatus === "Normal" ? "Resiko Stunting" : "Normal";
-    
-    // Confirm action
-    if (!window.confirm(`Ubah status gizi menjadi "${newStatus}"?`)) {
-      return;
-    }
 
-    // Update in database
+    // Update in database (no confirmation dialog)
     const { error } = await updateBalita(id, { status_gizi: newStatus });
     
     if (!error) {

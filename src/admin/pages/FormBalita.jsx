@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getBalitaById, createBalita, updateBalita } from "../../services/balitaService";
 import { createPemeriksaan } from "../../services/pemeriksaanService";
+import { calculateStatusGizi } from "../../utils/statusGiziCalculator";
 import "../../styles/admin/FormBalita.css";
 
 const hitungUmur = (tanggalLahir) => {
@@ -69,7 +70,7 @@ const FormBalita = () => {
     beratLahir: "",
     tinggiLahir: "",
     lilaLahir: "",
-    statusGizi: "normal",
+    statusGizi: "Normal",
   });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -94,7 +95,7 @@ const FormBalita = () => {
             beratLahir: data.berat_lahir || "",
             tinggiLahir: data.tinggi_lahir || "",
             lilaLahir: data.lila_lahir || "",
-            statusGizi: data.status_gizi || "normal",
+            statusGizi: data.status_gizi || "Normal",
           });
         } else {
           alert("Data Balita tidak ditemukan!");
@@ -165,7 +166,7 @@ const FormBalita = () => {
         berat_lahir: formData.beratLahir ? parseFloat(formData.beratLahir) : null,
         tinggi_lahir: formData.tinggiLahir ? parseFloat(formData.tinggiLahir) : null,
         lila_lahir: formData.lilaLahir ? parseFloat(formData.lilaLahir) : null,
-        status_gizi: formData.statusGizi || 'normal',
+        status_gizi: formData.statusGizi || 'Normal',
       };
 
       let result;
@@ -185,6 +186,11 @@ const FormBalita = () => {
             lingkar_lengan: formData.lilaLahir ? parseFloat(formData.lilaLahir) : null,
           });
           
+          // Gunakan status gizi yang dipilih user dari dropdown
+          const statusGiziFromForm = formData.statusGizi || 'Normal';
+          
+          console.log('📊 Status gizi from form:', statusGiziFromForm);
+          
           const pemeriksaanData = {
             balita_id: result.data.id,
             tanggal: formData.tanggalLahir,
@@ -192,7 +198,7 @@ const FormBalita = () => {
             berat_badan: parseFloat(formData.beratLahir),
             tinggi_badan: parseFloat(formData.tinggiLahir),
             lingkar_lengan: formData.lilaLahir ? parseFloat(formData.lilaLahir) : null,
-            status_gizi: formData.statusGizi || 'Normal',
+            status_gizi: statusGiziFromForm,
           };
           
           const pemeriksaanResult = await createPemeriksaan(pemeriksaanData);
@@ -489,14 +495,11 @@ const FormBalita = () => {
               </label>
               <select
                 name="statusGizi"
-                value={formData.statusGizi || "normal"}
+                value={formData.statusGizi || "Normal"}
                 onChange={handleChange}
               >
-                <option value="normal">Normal</option>
-                <option value="stunting">Stunting</option>
-                <option value="gizi buruk">Gizi Buruk</option>
-                <option value="gizi kurang">Gizi Kurang</option>
-                <option value="gizi lebih">Gizi Lebih</option>
+                <option value="Normal">Normal</option>
+                <option value="Resiko Stunting">Resiko Stunting</option>
               </select>
             </div>
           </div>

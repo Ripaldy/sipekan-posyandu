@@ -31,7 +31,7 @@ const AnakNormal = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await getBalitaByStatus("normal");
+      const { data, error } = await getBalitaByStatus("Normal");
       if (data && !error) {
         const transformedData = data.map((balita) => ({
           id: balita.id,
@@ -39,9 +39,9 @@ const AnakNormal = () => {
           jenisKelamin: balita.jenis_kelamin,
           tanggalLahir: balita.tanggal_lahir,
           umur: hitungUmur(balita.tanggal_lahir),
-          namaOrtu: balita.nama_ortu,
-          alamat: balita.alamat,
-          posyandu: balita.posyandu,
+          namaOrtu: balita.nama_ibu || "-",
+          alamat: balita.alamat || balita.desa_kelurahan || "-",
+          posyandu: balita.posyandu || "-",
           statusGizi: balita.status_gizi,
         }));
         setAnakNormalData(transformedData);

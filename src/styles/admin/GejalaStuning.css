@@ -252,6 +252,21 @@
   font-weight: 600;
   text-align: center;
   min-width: 100px;
+  transition: all 0.3s ease;
+}
+
+.status-badge.status-clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.status-badge.status-clickable:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.status-badge.status-clickable:active {
+  transform: scale(0.98);
 }
 
 .status-risiko-tinggi {

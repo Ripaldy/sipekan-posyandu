@@ -12,8 +12,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { getBalitaById } from "../../services/balitaService";
+import { getBalitaById, updateBalita } from "../../services/balitaService";
 import { getPemeriksaanByBalitaId, createPemeriksaan, updatePemeriksaan, deletePemeriksaan } from "../../services/pemeriksaanService";
+import { calculateStatusGizi } from "../../utils/statusGiziCalculator";
 import "../../styles/admin/DetailBalita.css";
 
 ChartJS.register(
@@ -167,6 +168,17 @@ const DetailBalita = () => {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       const usiaBulan = Math.floor(diffDays / 30);
 
+      // Auto-calculate status gizi berdasarkan WHO standards
+      const calculatedStatus = calculateStatusGizi({
+        beratBadan: parseFloat(newMeasurement.beratBadan),
+        tinggiBadan: parseFloat(newMeasurement.tinggiBadan),
+        lila: newMeasurement.lingkarLengan ? parseFloat(newMeasurement.lingkarLengan) : null,
+        usiaBulan,
+        jenisKelamin: dataAnak.jenisKelamin
+      });
+
+      console.log('📊 Auto-calculated status gizi (add):', calculatedStatus);
+
       const pemeriksaanData = {
         balita_id: id,
         tanggal: newMeasurement.tanggal,
@@ -174,12 +186,16 @@ const DetailBalita = () => {
         berat_badan: parseFloat(newMeasurement.beratBadan),
         tinggi_badan: parseFloat(newMeasurement.tinggiBadan),
         lingkar_lengan: newMeasurement.lingkarLengan ? parseFloat(newMeasurement.lingkarLengan) : null,
-        status_gizi: 'Normal', // Default status gizi
+        status_gizi: calculatedStatus,
       };
 
       const { data, error } = await createPemeriksaan(pemeriksaanData);
 
       if (!error && data) {
+        // Update balita dengan status gizi terbaru
+        await updateBalita(id, { status_gizi: calculatedStatus });
+        console.log('✅ Status gizi balita updated:', calculatedStatus);
+
         // Add to local state
         const newRecord = {
           id: data.id,
@@ -192,6 +208,9 @@ const DetailBalita = () => {
         
         setRiwayatPemeriksaan([...riwayatPemeriksaan, newRecord].sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal)));
         
+        // Update dataAnak status untuk UI
+        setDataAnak(prev => ({ ...prev, statusGizi: calculatedStatus }));
+        
         // Reset form and close modal
         setNewMeasurement({
           tanggal: new Date().toISOString().split('T')[0],
@@ -200,7 +219,7 @@ const DetailBalita = () => {
           lingkarLengan: '',
         });
         setShowAddModal(false);
-        alert("Data pemeriksaan berhasil ditambahkan!");
+        alert(`Data pemeriksaan berhasil ditambahkan!\nStatus gizi: ${calculatedStatus}`);
       } else {
         console.error("Failed to add measurement:", error);
         alert("Gagal menambah data pemeriksaan. Silakan coba lagi.");
@@ -225,18 +244,33 @@ const DetailBalita = () => {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       const usiaBulan = Math.floor(diffDays / 30);
 
+      // Auto-calculate status gizi berdasarkan WHO standards
+      const calculatedStatus = calculateStatusGizi({
+        beratBadan: parseFloat(newMeasurement.beratBadan),
+        tinggiBadan: parseFloat(newMeasurement.tinggiBadan),
+        lila: newMeasurement.lingkarLengan ? parseFloat(newMeasurement.lingkarLengan) : null,
+        usiaBulan,
+        jenisKelamin: dataAnak.jenisKelamin
+      });
+
+      console.log('📊 Auto-calculated status gizi (edit):', calculatedStatus);
+
       const pemeriksaanData = {
         tanggal: newMeasurement.tanggal,
         usia_bulan: usiaBulan,
         berat_badan: parseFloat(newMeasurement.beratBadan),
         tinggi_badan: parseFloat(newMeasurement.tinggiBadan),
         lingkar_lengan: newMeasurement.lingkarLengan ? parseFloat(newMeasurement.lingkarLengan) : null,
-        status_gizi: 'Normal',
+        status_gizi: calculatedStatus,
       };
 
       const { data, error } = await updatePemeriksaan(editingId, pemeriksaanData);
 
       if (!error && data) {
+        // Update balita dengan status gizi terbaru
+        await updateBalita(id, { status_gizi: calculatedStatus });
+        console.log('✅ Status gizi balita updated:', calculatedStatus);
+
         // Update local state
         const updatedRiwayat = riwayatPemeriksaan.map(item => 
           item.id === editingId 
@@ -252,6 +286,9 @@ const DetailBalita = () => {
         
         setRiwayatPemeriksaan(updatedRiwayat);
         
+        // Update dataAnak status untuk UI
+        setDataAnak(prev => ({ ...prev, statusGizi: calculatedStatus }));
+        
         // Reset form and close modal
         setNewMeasurement({
           tanggal: new Date().toISOString().split('T')[0],
@@ -261,7 +298,7 @@ const DetailBalita = () => {
         });
         setShowEditModal(false);
         setEditingId(null);
-        alert("Data pemeriksaan berhasil diperbarui!");
+        alert(`Data pemeriksaan berhasil diperbarui!\nStatus gizi: ${calculatedStatus}`);
       } else {
         console.error("Failed to update measurement:", error);
         alert("Gagal memperbarui data. Silakan coba lagi.");

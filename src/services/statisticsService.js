@@ -34,11 +34,11 @@ export const getDashboardStats = async () => {
 
     // Count balita by status
     const totalBalita = balitaData.length;
-    const stunting = balitaData.filter(b => b.status_gizi === 'stunting').length;
-    const normal = balitaData.filter(b => b.status_gizi === 'normal').length;
-    const giziBuruk = balitaData.filter(b => b.status_gizi === 'gizi buruk').length;
-    const giziKurang = balitaData.filter(b => b.status_gizi === 'gizi kurang').length;
-    const giziLebih = balitaData.filter(b => b.status_gizi === 'gizi lebih').length;
+    const stunting = balitaData.filter(b => b.status_gizi === 'Resiko Stunting').length;
+    const normal = balitaData.filter(b => b.status_gizi === 'Normal').length;
+    const giziBuruk = 0; // Tidak digunakan lagi
+    const giziKurang = 0; // Tidak digunakan lagi
+    const giziLebih = 0; // Tidak digunakan lagi
 
     // Get total pemeriksaan count
     const { count: totalPemeriksaan, error: pemeriksaanError } = await supabase
@@ -49,11 +49,10 @@ export const getDashboardStats = async () => {
       console.error('❌ Get pemeriksaan count error:', pemeriksaanError.message);
     }
 
-    // Get active kegiatan count
+    // Get total kegiatan count (all status)
     const { count: kegiatanAktif, error: kegiatanError } = await supabase
       .from('kegiatan')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'aktif');
+      .select('*', { count: 'exact', head: true });
 
     if (kegiatanError) {
       console.error('❌ Get kegiatan count error:', kegiatanError.message);
@@ -300,10 +299,14 @@ export const getRecentActivity = async (days = 7) => {
  */
 export const getBalitaRegistrationTrend = async (year) => {
   try {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth(); // 0-11
+    
     const startDate = `${year}-01-01`;
     const endDate = `${year}-12-31`;
 
-    // Get all balita created in the year
+    // Get all balita created/registered in the year
     const { data: balitaData, error } = await supabase
       .from('balita')
       .select('created_at')
@@ -325,9 +328,10 @@ export const getBalitaRegistrationTrend = async (year) => {
       monthlyRegistration[month]++;
     });
 
-    // Calculate cumulative
+    // Calculate cumulative (only up to current month if current year)
     let total = 0;
-    for (let i = 0; i < 12; i++) {
+    const maxMonth = (year === currentYear) ? currentMonth : 11;
+    for (let i = 0; i <= maxMonth; i++) {
       total += monthlyRegistration[i];
       cumulativeCount[i] = total;
     }

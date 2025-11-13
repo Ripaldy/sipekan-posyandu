@@ -174,13 +174,6 @@ const LoginAdmin = () => {
               )}
             </button>
           </form>
-
-          {/* Footer info */}
-          <div className="login-footer">
-            <p>
-              Demo: <span>admin@sipekan.com</span> / <span>Admin123!</span>
-            </p>
-          </div>
         </div>
 
         {/* Security badge */}
