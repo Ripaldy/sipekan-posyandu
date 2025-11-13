@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getBalitaById, createBalita, updateBalita } from "../../services/balitaService";
+import { createPemeriksaan } from "../../services/pemeriksaanService";
 import "../../styles/admin/FormBalita.css";
 
 const hitungUmur = (tanggalLahir) => {
@@ -38,6 +39,8 @@ const validateField = (name, value) => {
       return value < 0.5 || value > 10 ? "Berat lahir harus antara 0.5-10 kg" : "";
     case "tinggiLahir":
       return value < 30 || value > 70 ? "Tinggi lahir harus antara 30-70 cm" : "";
+    case "lilaLahir":
+      return value < 10 || value > 20 ? "LILA harus antara 10-20 cm" : "";
     case "tanggalLahir":
       return value === "" ? "Tanggal lahir wajib diisi" : "";
     case "desa":
@@ -61,8 +64,11 @@ const FormBalita = () => {
     namaIbu: "",
     namaAyah: "",
     alamat: "",
+    desa: "",
+    posyandu: "",
     beratLahir: "",
     tinggiLahir: "",
+    lilaLahir: "",
     statusGizi: "normal",
   });
   const [errors, setErrors] = useState({});
@@ -83,8 +89,11 @@ const FormBalita = () => {
             namaIbu: data.nama_ibu || "",
             namaAyah: data.nama_ayah || "",
             alamat: data.alamat || "",
+            desa: data.desa_kelurahan || "",
+            posyandu: data.posyandu || "",
             beratLahir: data.berat_lahir || "",
             tinggiLahir: data.tinggi_lahir || "",
+            lilaLahir: data.lila_lahir || "",
             statusGizi: data.status_gizi || "normal",
           });
         } else {
@@ -151,8 +160,11 @@ const FormBalita = () => {
         nama_ibu: formData.namaIbu || null,
         nama_ayah: formData.namaAyah || null,
         alamat: formData.alamat || null,
+        desa_kelurahan: formData.desa || null,
+        posyandu: formData.posyandu || null,
         berat_lahir: formData.beratLahir ? parseFloat(formData.beratLahir) : null,
         tinggi_lahir: formData.tinggiLahir ? parseFloat(formData.tinggiLahir) : null,
+        lila_lahir: formData.lilaLahir ? parseFloat(formData.lilaLahir) : null,
         status_gizi: formData.statusGizi || 'normal',
       };
 
@@ -161,6 +173,36 @@ const FormBalita = () => {
         result = await updateBalita(id, balitaData);
       } else {
         result = await createBalita(balitaData);
+        
+        // Setelah balita dibuat, otomatis create pemeriksaan pertama
+        if (result.data && !result.error) {
+          console.log('🔄 Creating first pemeriksaan with data:', {
+            balita_id: result.data.id,
+            tanggal: formData.tanggalLahir,
+            usia_bulan: 0,
+            berat_badan: parseFloat(formData.beratLahir),
+            tinggi_badan: parseFloat(formData.tinggiLahir),
+            lingkar_lengan: formData.lilaLahir ? parseFloat(formData.lilaLahir) : null,
+          });
+          
+          const pemeriksaanData = {
+            balita_id: result.data.id,
+            tanggal: formData.tanggalLahir,
+            usia_bulan: 0, // Baru lahir
+            berat_badan: parseFloat(formData.beratLahir),
+            tinggi_badan: parseFloat(formData.tinggiLahir),
+            lingkar_lengan: formData.lilaLahir ? parseFloat(formData.lilaLahir) : null,
+            status_gizi: formData.statusGizi || 'Normal',
+          };
+          
+          const pemeriksaanResult = await createPemeriksaan(pemeriksaanData);
+          
+          if (pemeriksaanResult.error) {
+            console.error('❌ Failed to create pemeriksaan:', pemeriksaanResult.error);
+          } else {
+            console.log('✅ Pemeriksaan pertama berhasil dibuat:', pemeriksaanResult.data);
+          }
+        }
       }
 
       if (result.data && !result.error) {
@@ -375,6 +417,29 @@ const FormBalita = () => {
               )}
             </div>
 
+            <div className="form-group-page">
+              <label>
+                LILA / Lingkar Lengan Atas (cm)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                name="lilaLahir"
+                value={formData.lilaLahir || ""}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Contoh: 13.5"
+                className={
+                  errors.lilaLahir && touched.lilaLahir ? "input-error" : ""
+                }
+              />
+              {errors.lilaLahir && touched.lilaLahir && (
+                <span className="error-text">
+                  <span className="error-icon">●</span> {errors.lilaLahir}
+                </span>
+              )}
+            </div>
+
             <div className="form-row-simple">
               <div className="form-group-page">
                 <label>
@@ -391,17 +456,31 @@ const FormBalita = () => {
               </div>
               <div className="form-group-page">
                 <label>
-                  Posyandu
+                  Desa/Kelurahan
                 </label>
                 <input
                   type="text"
-                  name="posyandu"
-                  value={formData.posyandu || ""}
+                  name="desa"
+                  value={formData.desa || ""}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="Cth: Posyandu Anggrek"
+                  placeholder="Cth: Sleman"
                 />
               </div>
+            </div>
+
+            <div className="form-group-page">
+              <label>
+                Posyandu
+              </label>
+              <input
+                type="text"
+                name="posyandu"
+                value={formData.posyandu || ""}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Cth: Posyandu Anggrek"
+              />
             </div>
 
             <div className="form-group-page">

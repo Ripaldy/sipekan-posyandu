@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { getDashboardStats, getMonthlyStats } from '../../services/statisticsService';
+import { getDashboardStats, getBalitaRegistrationTrend, getAverageGrowthByMonth } from '../../services/statisticsService';
 import '../../styles/admin/Dashboard.css';
 
 const Dashboard = () => {
@@ -18,10 +18,14 @@ const Dashboard = () => {
     kegiatanAktif: 0,
     beritaPublished: 0,
   });
-  const [monthlyData, setMonthlyData] = useState({
+  const [registrationTrend, setRegistrationTrend] = useState({
     months: [],
-    pemeriksaan: [],
-    kegiatan: [],
+    cumulativeCount: [],
+  });
+  const [averageGrowth, setAverageGrowth] = useState({
+    months: [],
+    averageBerat: [],
+    averageTinggi: [],
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,15 +44,27 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    const fetchMonthlyData = async () => {
-      const { data, error } = await getMonthlyStats(selectedYear);
+    const fetchRegistrationTrend = async () => {
+      const { data, error } = await getBalitaRegistrationTrend(selectedYear);
       if (data && !error) {
-        setMonthlyData(data);
+        setRegistrationTrend(data);
       } else {
-        console.error('Failed to fetch monthly stats:', error);
+        console.error('Failed to fetch registration trend:', error);
       }
     };
-    fetchMonthlyData();
+    fetchRegistrationTrend();
+  }, [selectedYear]);
+
+  useEffect(() => {
+    const fetchAverageGrowth = async () => {
+      const { data, error } = await getAverageGrowthByMonth(selectedYear);
+      if (data && !error) {
+        setAverageGrowth(data);
+      } else {
+        console.error('Failed to fetch average growth:', error);
+      }
+    };
+    fetchAverageGrowth();
   }, [selectedYear]);
 
   if (isLoading) {
@@ -68,17 +84,17 @@ const Dashboard = () => {
     { name: 'Stunting', value: stats.stunting, color: '#f44336' },
   ];
 
-  // Data untuk Line Chart - Tren Pertumbuhan Bulanan
-  const trendData = monthlyData.months.map((month, index) => ({
+  // Data untuk Line Chart - Tren Jumlah Anak Terdaftar (Real Data)
+  const trendData = registrationTrend.months.map((month, index) => ({
     month,
-    jumlah: (index + 1) * 10 + Math.floor(Math.random() * 20), // Simulasi data tren
+    jumlah: registrationTrend.cumulativeCount[index] || 0,
   }));
 
-  // Data untuk chart rata-rata pertumbuhan
-  const growthData = monthlyData.months.map((month, index) => ({
+  // Data untuk chart rata-rata pertumbuhan (Real Data)
+  const growthData = averageGrowth.months.map((month, index) => ({
     month,
-    'Berat Badan (kg)': 75 + index * 1.5, // Simulasi data
-    'Tinggi Badan (cm)': 8 + index * 0.3, // Simulasi data
+    'Berat Badan (kg)': parseFloat(averageGrowth.averageBerat[index]) || 0,
+    'Tinggi Badan (cm)': parseFloat(averageGrowth.averageTinggi[index]) || 0,
   }));
 
   return (

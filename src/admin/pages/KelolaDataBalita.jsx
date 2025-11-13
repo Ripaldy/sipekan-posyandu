@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllBalita, deleteBalita } from "../../services/balitaService";
+import { getAllBalita, deleteBalita, updateBalita } from "../../services/balitaService";
 import "../../styles/admin/KelolaDataBalita.css";
 
 const hitungUmur = (tanggalLahir) => {
@@ -83,6 +83,32 @@ const KelolaDataBalita = () => {
     }
   };
 
+  const handleToggleStatus = async (id, currentStatus) => {
+    // Toggle between "Normal" and "Resiko Stunting"
+    const newStatus = currentStatus === "Normal" ? "Resiko Stunting" : "Normal";
+    
+    // Confirm action
+    if (!window.confirm(`Ubah status gizi menjadi "${newStatus}"?`)) {
+      return;
+    }
+
+    // Update in database
+    const { error } = await updateBalita(id, { status_gizi: newStatus });
+    
+    if (!error) {
+      // Update local state
+      setDataBalitaList(dataBalitaList.map(balita => 
+        balita.id === id 
+          ? { ...balita, statusGizi: newStatus }
+          : balita
+      ));
+      alert(`Status gizi berhasil diubah menjadi "${newStatus}"!`);
+    } else {
+      console.error("Failed to update status:", error);
+      alert("Gagal mengubah status gizi. Silakan coba lagi.");
+    }
+  };
+
   return (
     <div className="kelola-container">
       <div className="kelola-header">
@@ -133,13 +159,15 @@ const KelolaDataBalita = () => {
                   <td>{data.posyandu}</td>
                   <td>{data.umur}</td>
                   <td>
-                    <span
-                      className={`status-badge ${
+                    <button
+                      onClick={() => handleToggleStatus(data.id, data.statusGizi)}
+                      className={`status-badge status-clickable ${
                         data.statusGizi === "Normal" ? "normal" : "resiko"
                       }`}
+                      title="Klik untuk mengubah status"
                     >
                       {data.statusGizi}
-                    </span>
+                    </button>
                   </td>
                   <td>
                     <div className="action-buttons">

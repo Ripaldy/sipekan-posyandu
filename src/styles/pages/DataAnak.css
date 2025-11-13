@@ -302,3 +302,90 @@
     padding: 20px;
   }
 }
+
+/* ======================================= */
+/* ====== RIWAYAT PENGUKURAN TABLE ======= */
+/* ======================================= */
+.riwayat-pengukuran-section {
+  background: white;
+  padding: 35px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(56, 142, 60, 0.12);
+  border: 1px solid rgba(56, 142, 60, 0.1);
+  margin-bottom: 40px;
+}
+
+.riwayat-pengukuran-section h3 {
+  font-size: 1.6rem;
+  color: var(--primary-green);
+  margin-bottom: 25px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 142, 60, 0.1);
+}
+
+.riwayat-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.riwayat-table thead th {
+  background: linear-gradient(135deg, var(--primary-green) 0%, #2e7d32 100%);
+  color: white;
+  padding: 16px 15px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.riwayat-table thead th:last-child {
+  border-right: none;
+}
+
+.riwayat-table tbody td {
+  padding: 14px 15px;
+  text-align: center;
+  border-bottom: 1px solid rgba(56, 142, 60, 0.1);
+  color: #333;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+}
+
+.riwayat-table tbody tr:hover td {
+  background-color: rgba(56, 142, 60, 0.05);
+}
+
+.riwayat-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Alternating row colors */
+.riwayat-table tbody tr:nth-child(even) {
+  background-color: rgba(56, 142, 60, 0.02);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .riwayat-pengukuran-section {
+    padding: 20px 15px;
+  }
+
+  .riwayat-table {
+    font-size: 0.85rem;
+  }
+
+  .riwayat-table thead th,
+  .riwayat-table tbody td {
+    padding: 10px 8px;
+  }
+}

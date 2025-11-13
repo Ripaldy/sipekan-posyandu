@@ -292,3 +292,109 @@ export const getRecentActivity = async (days = 7) => {
     return { data: null, error };
   }
 };
+
+/**
+ * Get balita registration trend by month
+ * @param {number} year - Year (e.g., 2025)
+ * @returns {Promise<{data, error}>}
+ */
+export const getBalitaRegistrationTrend = async (year) => {
+  try {
+    const startDate = `${year}-01-01`;
+    const endDate = `${year}-12-31`;
+
+    // Get all balita created in the year
+    const { data: balitaData, error } = await supabase
+      .from('balita')
+      .select('created_at')
+      .gte('created_at', startDate)
+      .lte('created_at', endDate)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('❌ Get balita registration trend error:', error.message);
+      return { data: null, error };
+    }
+
+    // Group by month and calculate cumulative
+    const monthlyRegistration = Array(12).fill(0);
+    const cumulativeCount = Array(12).fill(0);
+
+    balitaData.forEach(b => {
+      const month = new Date(b.created_at).getMonth();
+      monthlyRegistration[month]++;
+    });
+
+    // Calculate cumulative
+    let total = 0;
+    for (let i = 0; i < 12; i++) {
+      total += monthlyRegistration[i];
+      cumulativeCount[i] = total;
+    }
+
+    const trendData = {
+      year,
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+      monthlyCount: monthlyRegistration,
+      cumulativeCount: cumulativeCount,
+    };
+
+    console.log(`✅ Fetched balita registration trend for year: ${year}`);
+    return { data: trendData, error: null };
+  } catch (error) {
+    console.error('❌ Get balita registration trend exception:', error);
+    return { data: null, error };
+  }
+};
+
+/**
+ * Get average growth statistics per month
+ * @param {number} year - Year (e.g., 2025)
+ * @returns {Promise<{data, error}>}
+ */
+export const getAverageGrowthByMonth = async (year) => {
+  try {
+    const startDate = `${year}-01-01`;
+    const endDate = `${year}-12-31`;
+
+    // Get all pemeriksaan in the year
+    const { data: pemeriksaanData, error } = await supabase
+      .from('pemeriksaan')
+      .select('tanggal, berat_badan, tinggi_badan')
+      .gte('tanggal', startDate)
+      .lte('tanggal', endDate);
+
+    if (error) {
+      console.error('❌ Get average growth error:', error.message);
+      return { data: null, error };
+    }
+
+    // Group by month and calculate averages
+    const monthlyData = Array(12).fill(null).map(() => ({
+      beratTotal: 0,
+      tinggiTotal: 0,
+      count: 0,
+    }));
+
+    pemeriksaanData.forEach(p => {
+      const month = new Date(p.tanggal).getMonth();
+      monthlyData[month].beratTotal += p.berat_badan || 0;
+      monthlyData[month].tinggiTotal += p.tinggi_badan || 0;
+      monthlyData[month].count++;
+    });
+
+    // Calculate averages
+    const averageData = {
+      year,
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+      averageBerat: monthlyData.map(m => m.count > 0 ? (m.beratTotal / m.count).toFixed(2) : 0),
+      averageTinggi: monthlyData.map(m => m.count > 0 ? (m.tinggiTotal / m.count).toFixed(2) : 0),
+    };
+
+    console.log(`✅ Fetched average growth by month for year: ${year}`);
+    return { data: averageData, error: null };
+  } catch (error) {
+    console.error('❌ Get average growth by month exception:', error);
+    return { data: null, error };
+  }
+};

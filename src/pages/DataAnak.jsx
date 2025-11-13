@@ -65,10 +65,12 @@ const DataAnak = () => {
       // Transform data
       const riwayat = pemeriksaanList
         ? pemeriksaanList
-            .map((p) => ({
-              tanggal: p.tanggal_pemeriksaan,
+            .map((p, index) => ({
+              pengukuranKe: p.pengukuran_ke || index + 1,
+              tanggal: p.tanggal,
               berat: p.berat_badan,
               tinggi: p.tinggi_badan,
+              lila: p.lingkar_lengan || 0,
             }))
             .sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal))
         : [];
@@ -295,6 +297,42 @@ const DataAnak = () => {
                 </tr>
               </tbody>
             </table>
+
+            {dataAnak.riwayat && dataAnak.riwayat.length > 0 && (
+              <div className="riwayat-pengukuran-section">
+                <h3>📋 Riwayat Pengukuran</h3>
+                <div className="table-wrapper">
+                  <table className="riwayat-table">
+                    <thead>
+                      <tr>
+                        <th>Pengukuran Ke-</th>
+                        <th>Tanggal</th>
+                        <th>Berat Badan (kg)</th>
+                        <th>Tinggi Badan (cm)</th>
+                        <th>LILA (cm)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dataAnak.riwayat.map((item, index) => (
+                        <tr key={index}>
+                          <td>{item.pengukuranKe}</td>
+                          <td>
+                            {new Date(item.tanggal).toLocaleDateString("id-ID", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
+                          </td>
+                          <td>{item.berat}</td>
+                          <td>{item.tinggi}</td>
+                          <td>{item.lila || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
             {dataAnak.riwayat && dataAnak.riwayat.length > 0 ? (
               <div className="grafik-container">
